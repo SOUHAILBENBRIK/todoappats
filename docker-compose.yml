@@ -1,0 +1,62 @@
+version: "3.8"
+
+networks:
+  custom_network:  # Define the network explicitly
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24  # Custom subnet
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: vue_app
+    ports:
+      - "7000:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: ["npm", "run", "dev"]
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.10  # Assign specific IP
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: symfony_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://symfony:symfony@db:5432/symfony?serverVersion=16&charset=utf8
+      - JWT_PASSPHRASE=2fdddbf2ed8d931e61258ac2be9929234721d564b901b776221785b3073c6834
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.20
+
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: symfony
+      POSTGRES_PASSWORD: symfony
+      POSTGRES_DB: symfony
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      custom_network:
+        ipv4_address: 192.168.1.30
+
+volumes:
+  postgres_data:
+
