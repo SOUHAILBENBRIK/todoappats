@@ -49,7 +49,7 @@ class ResponseService
             Response::HTTP_FORBIDDEN);
     }
 
-    public function errorResponse(string $message, int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
+    public function errorResponse($message, int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
     {
         return new JsonResponse(
             [

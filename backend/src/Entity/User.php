@@ -4,10 +4,12 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -35,9 +37,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(type: 'string', length: 255)]
     #[Assert\Length(
-        min: 8, max: 50,
+        min: 8, max: 100,
         minMessage: 'Your Password must be at least {{ limit }} characters long.', maxMessage: 'Your Password cannot  be longer than  {{ limit }} characters long.',
     )]
     private ?string $password = null;
@@ -62,15 +64,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('user:read')]
     private ?string $last_name = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('user:read')]
-    private ?string $profile_picture = null;
+
 
     #[Assert\NotBlank]
     #[Assert\Positive]
     #[ORM\Column(nullable: true)]
     #[Groups('user:read')]
     private ?int $age = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $profileImage = null;
+
+    #[Vich\UploadableField(mapping: 'user_images', fileNameProperty: 'profileImage')]
+    private ?File $profileImageFile = null;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
 
     public function getId(): ?int
     {
@@ -183,17 +192,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getProfilePicture(): ?string
-    {
-        return $this->profile_picture;
-    }
-
-    public function setProfilePicture(?string $profile_picture): static
-    {
-        $this->profile_picture = $profile_picture;
-
-        return $this;
-    }
 
     public function getAge(): ?int
     {
@@ -205,5 +203,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->age = $age;
 
         return $this;
+    }
+
+    public function setProfileImageFile(?File $profileImageFile = null): void
+    {
+        $this->profileImageFile = $profileImageFile;
+        if ($profileImageFile) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getProfileImageFile(): ?File
+    {
+        return $this->profileImageFile;
+    }
+
+    public function setProfileImage(?string $profileImage): void
+    {
+        $this->profileImage = $profileImage;
+    }
+
+    public function getProfileImage(): ?string
+    {
+        return $this->profileImage;
     }
 }
