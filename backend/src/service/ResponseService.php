@@ -3,30 +3,59 @@
 namespace App\service;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class ResponseService
 {
-    public function response(
-        string $status,
+    public function successResponse(
         string $message,
-        int $statusCode,
+        int $statusCode = Response::HTTP_OK,
         $data = null,
     ): JsonResponse {
         if (null === $data) {
-            $data = new JsonResponse(
+            return new JsonResponse(
                 [
-                    'status' => $status,
+                    'status' => 'success',
                     'message' => $message,
-                ],
-                $statusCode, );
+                ], $statusCode, );
         }
 
         return new JsonResponse(
             [
-                'status' => $status,
+                'status' => 'success',
                 'message' => $message,
                 'data' => $data],
             $statusCode,
         );
+    }
+
+    public function notfoundResponse(string $message): JsonResponse
+    {
+        return new JsonResponse(
+            [
+                'status' => 'error',
+                'message' => $message,
+            ],
+            Response::HTTP_NOT_FOUND, );
+    }
+
+    public function accessDeniedResponse(string $message): JsonResponse
+    {
+        return new JsonResponse(
+            [
+                'status' => 'error',
+                'message' => $message,
+            ],
+            Response::HTTP_FORBIDDEN);
+    }
+
+    public function errorResponse(string $message, int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR): JsonResponse
+    {
+        return new JsonResponse(
+            [
+                'status' => 'error',
+                'message' => $message,
+            ],
+            $statusCode);
     }
 }

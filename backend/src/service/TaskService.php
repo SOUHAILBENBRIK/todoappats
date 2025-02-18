@@ -23,16 +23,29 @@ class TaskService
     {
         $tasks = $this->taskRepository->findBy(['user' => $userId]);
 
-        return $this->serializer->serialize($tasks, 'json', ['groups' => 'task:read', 'ignored_attributes' => ['user']]);
+        return $this->serializer->serialize($tasks, 'json', ['groups' => ['task:read'], 'ignored_attributes' => ['user']]);
     }
 
-    public function gettAllCompletedTasks(int $userId): string
+    public function getAllCompletedTasks(int $userId): string
     {
         $tasks = $this->taskRepository->findBy(['user' => $userId, 'completed' => true]);
 
-        return $this->serializer->serialize($tasks, 'json', ['groups' => 'task:read', 'ignored_attributes' => ['user']]);
+        return $this->serializer->serialize($tasks, 'json', ['groups' => ['task:read'], 'ignored_attributes' => ['user']]);
     }
-    
+
+    public function getAllMissedTasks(int $userId): string
+    {
+        $tasks = $this->taskRepository->findBy([
+            'user' => $userId,
+            'completed' => false,
+        ]); // return uncompleted tasks for user x
+
+        $filteredTasks = array_filter($tasks, function ($task) {
+            return null != $task->getDeadline() && $task->getDeadline() > new \DateTimeImmutable();
+        }); // check deadline
+
+        return $this->serializer->serialize($filteredTasks, 'json', ['groups' => ['task:read'], 'ignored_attributes' => ['user']]);
+    }
 
     public function getTask(int $taskId): ?Task
     {
@@ -94,8 +107,9 @@ class TaskService
         return ['success' => 'Task deleted successfully'];
     }
 
-    public function deleteAllTasks(array $tasks): array
+    public function deleteAllTasks(int $userId): array
     {
+        $tasks = $this->taskRepository->findBy(['user' => $userId]);
         foreach ($tasks as $task) {
             $this->manager->remove($task);
         }

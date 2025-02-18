@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\service\ResponseService;
 use App\service\TaskService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,20 +25,63 @@ final class TaskController extends AbstractController
         $this->responseService = $responseService;
     }
 
-    #[Route('/user/{user_id<\d+>}', name: 'get_all-tasks', methods: ['GET'])]
+    #[Route('/user/{id<\d+>}', name: 'get_all-tasks', methods: ['GET'])]
     public function getAllTasks(
-        int $user_id,
+        int $id,
+        EntityManagerInterface $entityManager,
     ): JsonResponse {
         try {
-            $tasks = $this->taskService->getAllTasks($user_id);
+            $user = $entityManager->getRepository(User::class)->find($id);
+            if (!$user) {
+                return $this->responseService->notfoundResponse('User not found');
+            }
+            if (!$this->isGranted('view_tasks', $user)) {
+                return $this->responseService->accessDeniedResponse('You can see only our tasks');
+            }
+            $tasks = $this->taskService->getAllTasks($user->getId());
 
-            return $this->responseService->response(status: 'success', message: 'successfully get All tasks', statusCode: Response::HTTP_OK, data: $tasks);
+            return $this->responseService->successResponse(message: 'successfully get All tasks', data: $tasks);
         } catch (\Exception $e) {
-            return $this->responseService->response(
-                status: 'error',
-                message: $e->getMessage(),
-                statusCode: Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return $this->responseService->errorResponse(message: $e->getMessage());
+        }
+    }
+
+    #[Route('/completed/user/{id<\d+>}', name: 'get_completed_tasks', methods: ['GET'])]
+    public function getCompletedTasks(int $id, EntityManagerInterface $entityManager): JsonResponse
+    {
+        try {
+            $user = $entityManager->getRepository(User::class)->find($id);
+            if (!$user) {
+                return $this->responseService->notfoundResponse('User not found');
+            }
+            if (!$this->isGranted('view_tasks', $user)) {
+                return $this->responseService->accessDeniedResponse('You can see only our tasks');
+            }
+
+            $tasks = $this->taskService->getAllCompletedTasks($user->getId());
+
+            return $this->responseService->successResponse(message: 'successfully get All completed tasks', data: $tasks);
+        } catch (\Exception $e) {
+            return $this->responseService->errorResponse(message: $e->getMessage());
+        }
+    }
+
+    #[Route('/missed/user/{user_id<\d+>}', name : 'get_missed_tasks', methods: ['GET'])]
+    public function getMissedTasks(int $user_id, EntityManagerInterface $entityManager): JsonResponse
+    {
+        try {
+            $user = $entityManager->getRepository(User::class)->find($user_id);
+            if (!$user) {
+                return $this->responseService->notfoundResponse('User not found');
+            }
+            if (!$this->isGranted('view_tasks', $user)) {
+                return $this->responseService->accessDeniedResponse('You can see only our tasks');
+            }
+            $tasks = $this->taskService->getAllMissedTasks($user_id);
+
+            return $this->responseService->successResponse(message: 'successfully get All missed tasks', data: $tasks);
+        } catch (\Exception $e) {
+            return $this->responseService->errorResponse(message: $e->getMessage());
         }
     }
 
@@ -46,24 +91,17 @@ final class TaskController extends AbstractController
         try {
             $result = $this->taskService->createTask($request->getContent());
             if (isset($result['error'])) {
-                return $this->responseService->response(
-                    status: 'error',
+                return $this->responseService->errorResponse(
                     message: $result['error'],
-                    statusCode: Response::HTTP_INTERNAL_SERVER_ERROR
                 );
             }
 
-            return $this->responseService->response(
-                status: 'success',
+            return $this->responseService->successResponse(
                 message: 'task created successfully',
                 statusCode: Response::HTTP_CREATED
             );
         } catch (\Exception $e) {
-            return $this->responseService->response(
-                status: 'error',
-                message: $e->getMessage(),
-                statusCode: Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return $this->responseService->errorResponse(message: $e->getMessage());
         }
     }
 
@@ -77,24 +115,17 @@ final class TaskController extends AbstractController
             $taskJson = $serializer->serialize($task, 'json', ['groups' => 'task:read', 'ignored_attributes' => ['user']]);
 
             if (!$task) {
-                return $this->responseService->response(
-                    status: 'error',
+                return $this->responseService->notfoundResponse(
                     message: 'task not found',
-                    statusCode: Response::HTTP_NOT_FOUND
                 );
             }
 
-            return $this->responseService->response(
-                status: 'success',
+            return $this->responseService->successResponse(
                 message: 'task retrieved successfully',
-                statusCode: Response::HTTP_OK,
                 data: $taskJson
             );
         } catch (\Exception $e) {
-            return $this->responseService->response(
-                status: 'error',
-                message: $e->getMessage(),
-                statusCode: Response::HTTP_INTERNAL_SERVER_ERROR);
+            return $this->responseService->errorResponse(message: $e->getMessage());
         }
     }
 
@@ -106,33 +137,27 @@ final class TaskController extends AbstractController
         try {
             $currentTask = $this->taskService->getTask($task_id);
             if (!$currentTask) {
-                return $this->responseService->response(
-                    status: 'error',
+                return $this->responseService->notfoundResponse(
+
                     message: 'task not found',
-                    statusCode: Response::HTTP_NOT_FOUND
+
                 );
             }
             $result = $this->taskService->updateTask($currentTask, $request->getContent());
 
             if (isset($result['error'])) {
-                return $this->responseService->response(
-                    status: 'error',
+                return $this->responseService->errorResponse(
+
                     message: $result['error'],
                     statusCode: Response::HTTP_BAD_REQUEST
                 );
             }
 
-            return $this->responseService->response(
-                status: 'success',
+            return $this->responseService->successResponse(
                 message: 'task updated successfully',
-                statusCode: Response::HTTP_OK,
             );
         } catch (\Exception $e) {
-            return $this->responseService->response(
-                status: 'error',
-                message: $e->getMessage(),
-                statusCode: Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return $this->responseService->errorResponse(message: $e->getMessage());
         }
     }
 
@@ -144,33 +169,24 @@ final class TaskController extends AbstractController
         try {
             $currentTask = $this->taskService->getTask($task_id);
             if (!$currentTask) {
-                return $this->responseService->response(
-                    status: 'error',
+                return $this->responseService->notfoundResponse(
                     message: 'task not found',
-                    statusCode: Response::HTTP_NOT_FOUND
                 );
             }
             $result = $this->taskService->patchTask($currentTask, json_decode($request->getContent(), true));
 
             if (isset($result['error'])) {
-                return $this->responseService->response(
-                    status: 'error',
+                return $this->responseService->errorResponse(
                     message: $result['error'],
                     statusCode: Response::HTTP_BAD_REQUEST
                 );
             }
 
-            return $this->responseService->response(
-                status: 'success',
+            return $this->responseService->successResponse(
                 message: $result['success'],
-                statusCode: Response::HTTP_OK,
             );
         } catch (\Exception $e) {
-            return $this->responseService->response(
-                status: 'error',
-                message: $e->getMessage(),
-                statusCode: Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return $this->responseService->errorResponse(message: $e->getMessage());
         }
     }
 
@@ -181,48 +197,41 @@ final class TaskController extends AbstractController
         try {
             $task = $this->taskService->getTask($task_id);
             if (!$task) {
-                return $this->responseService->response(
-                    status: 'error',
+                return $this->responseService->notfoundResponse(
                     message: 'task not found',
-                    statusCode: Response::HTTP_NOT_FOUND
                 );
             }
 
             $result = $this->taskService->deleteTask($task);
 
-            return $this->responseService->response(
-                status: 'success',
+            return $this->responseService->successResponse(
                 message: $result['success'],
-                statusCode: Response::HTTP_OK,
             );
         } catch (\Exception $e) {
-            return $this->responseService->response(
-                status: 'error',
-                message: $e->getMessage(),
-                statusCode: Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return $this->responseService->errorResponse(message: $e->getMessage());
         }
     }
 
     #[Route('/user/{user_id<\d+>}', name : 'delete_all_tasks', methods : ['Delete'])]
     public function deleteAllTask(
         int $user_id,
+        EntityManagerInterface $entityManager,
     ): JsonResponse {
         try {
-            $tasks = $this->taskService->getAllTasks($user_id);
-            $result = $this->taskService->deleteAllTasks($tasks);
+            $user = $entityManager->getRepository(User::class)->find($user_id);
+            if (!$user) {
+                return $this->responseService->notfoundResponse('User not found');
+            }
+            if (!$this->isGranted('view_tasks', $user)) {
+                return $this->responseService->accessDeniedResponse('You can see only our tasks');
+            }
+            $result = $this->taskService->deleteAllTasks($user_id);
 
-            return $this->responseService->response(
-                status: 'success',
+            return $this->responseService->successResponse(
                 message: $result['success'],
-                statusCode: Response::HTTP_OK,
             );
         } catch (\Exception $e) {
-            return $this->responseService->response(
-                status: 'error',
-                message: $e->getMessage(),
-                statusCode: Response::HTTP_INTERNAL_SERVER_ERROR
-            );
+            return $this->responseService->errorResponse(message: $e->getMessage());
         }
     }
 }

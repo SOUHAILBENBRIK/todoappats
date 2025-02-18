@@ -14,6 +14,7 @@ class Task
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('task:read')]
     private ?int $id = null;
     #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
@@ -40,10 +41,10 @@ class Task
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     #[Groups('task:read')]
-    #[Assert\Type(\DateTimeImmutable::class )]
+    #[Assert\Type(\DateTimeImmutable::class)]
     private ?\DateTimeImmutable $completedAt = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     #[Groups('task:read')]
     #[Assert\Type(\DateTimeImmutable::class)]
     private ?\DateTimeImmutable $deadline = null;
@@ -122,21 +123,29 @@ class Task
         return $this->completedAt;
     }
 
-    public function setCompletedAt(\DateTimeImmutable $completedAt): static
+    public function setCompletedAt(\DateTimeImmutable|string|null $completedAt): static
     {
-        $this->completedAt = $completedAt;
+        if (is_string($completedAt)) {
+            $this->completedAt = new \DateTimeImmutable($completedAt);
+        } else {
+            $this->completedAt = $completedAt;
+        }
 
         return $this;
     }
 
-    public function getDeadline(): ?\DateTimeInterface
+    public function getDeadline(): ?\DateTimeImmutable
     {
         return $this->deadline;
     }
 
-    public function setDeadline(?\DateTimeInterface $deadline): static
+    public function setDeadline(\DateTimeImmutable|string|null $deadline): static
     {
-        $this->deadline = $deadline;
+        if (is_string($deadline)) {
+            $this->deadline = new \DateTimeImmutable($deadline);
+        } else {
+            $this->deadline = $deadline;
+        }
 
         return $this;
     }

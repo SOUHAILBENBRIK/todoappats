@@ -17,13 +17,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('task:read')]
+    #[Groups('user:read')]
     private ?int $id = null;
     #[Assert\Email(
         message: 'The email {{ value }} is not a valid email.',
     )]
     #[ORM\Column(length: 180)]
-    #[Groups('task:read')]
+    #[Groups('user:read')]
     private ?string $email = null;
 
     /**
@@ -48,28 +48,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         minMessage: 'Your userName must be at least {{ limit }} characters long.', maxMessage: 'Your UserName cannot  be longer than  {{ limit }} characters long.',
     )]
     #[ORM\Column(length: 255)]
-    #[Groups('task:read')]
+    #[Groups('user:read')]
     private ?string $username = null;
     #[Assert\Length(
         min: 3, max: 50,
         minMessage: 'Your Name must be at least {{ limit }} characters long.', maxMessage: 'Your Name cannot  be longer than  {{ limit }} characters long.',
     )]
     #[ORM\Column(length: 255)]
-    #[Groups('task:read')]
+    #[Groups('user:read')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('task:read')]
+    #[Groups('user:read')]
     private ?string $last_name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups('task:read')]
+    #[Groups('user:read')]
     private ?string $profile_picture = null;
 
     #[Assert\NotBlank]
     #[Assert\Positive]
     #[ORM\Column(nullable: true)]
-    #[Groups('task:read')]
+    #[Groups('user:read')]
     private ?int $age = null;
 
     public function getId(): ?int
