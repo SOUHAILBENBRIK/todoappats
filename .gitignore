@@ -1,2 +1,20 @@
+# Ignore the .gitignore files in subprojects (optional)
 backend/.gitignore
 frontend/.gitignore
+
+# Ignore common dependencies
+node_modules/
+vendor/
+
+# Ignore build artifacts
+dist/
+public/build/
+var/cache/
+var/logs/
+var/sessions/
+
+# Editor files
+.idea/
+.vscode/
+
+
