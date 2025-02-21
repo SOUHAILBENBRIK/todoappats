@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -14,6 +16,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[Vich\Uploadable]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -64,8 +67,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups('user:read')]
     private ?string $last_name = null;
 
-
-
     #[Assert\NotBlank]
     #[Assert\Positive]
     #[ORM\Column(nullable: true)]
@@ -73,6 +74,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $age = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('user:read')]
     private ?string $profileImage = null;
 
     #[Vich\UploadableField(mapping: 'user_images', fileNameProperty: 'profileImage')]
@@ -80,6 +82,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
+
+    /**
+     * @var Collection<int, Priority>
+     */
+    #[ORM\OneToMany(targetEntity: Priority::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    /* if user deleted any priorities here is deleted */
+    private Collection $customPriorities;
+
+    /**
+     * @var Collection<int, Status>
+     */
+    #[ORM\OneToMany(targetEntity: Status::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private Collection $customStatuses;
+
+    public function __construct()
+    {
+        $this->customPriorities = new ArrayCollection();
+        $this->customStatuses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -192,7 +213,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
     public function getAge(): ?int
     {
         return $this->age;
@@ -226,5 +246,65 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getProfileImage(): ?string
     {
         return $this->profileImage;
+    }
+
+    /**
+     * @return Collection<int, Priority>
+     */
+    public function getCustomPriorities(): Collection
+    {
+        return $this->customPriorities;
+    }
+
+    public function addCustomPriority(Priority $customPriority): static
+    {
+        if (!$this->customPriorities->contains($customPriority)) {
+            $this->customPriorities->add($customPriority);
+            $customPriority->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomPriority(Priority $customPriority): static
+    {
+        if ($this->customPriorities->removeElement($customPriority)) {
+            // set the owning side to null (unless already changed)
+            if ($customPriority->getUser() === $this) {
+                $customPriority->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Status>
+     */
+    public function getCustomStatuses(): Collection
+    {
+        return $this->customStatuses;
+    }
+
+    public function addCustomStatus(Status $customStatus): static
+    {
+        if (!$this->customStatuses->contains($customStatus)) {
+            $this->customStatuses->add($customStatus);
+            $customStatus->setGg($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomStatus(Status $customStatus): static
+    {
+        if ($this->customStatuses->removeElement($customStatus)) {
+            // set the owning side to null (unless already changed)
+            if ($customStatus->getGg() === $this) {
+                $customStatus->setGg(null);
+            }
+        }
+
+        return $this;
     }
 }

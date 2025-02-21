@@ -88,7 +88,7 @@ final class UserController extends AbstractController
                     statusCode: Response::HTTP_BAD_REQUEST
                 );
             }
-            $uploadsDir = $this->getParameter('kernel.project_dir').'/public/uploads/images';
+            $uploadsDir = $this->getParameter('kernel.project_dir').'/public/uploads/user';
             $imagePath = $this->userService->uploadProfileImage($user, $file, $uploadsDir);
 
             return $this->responseService->successResponse(

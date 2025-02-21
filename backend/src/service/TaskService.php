@@ -2,10 +2,13 @@
 
 namespace App\service;
 
+use App\Entity\Priority;
+use App\Entity\Status;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -52,22 +55,79 @@ class TaskService
         return $this->taskRepository->find($taskId);
     }
 
-    public function createTask(string $jsonContent): array
+    public function createTask(Request $request): array
     {
-        $data = json_decode($jsonContent, true);
-        $user = $this->manager->getRepository(User::class)->find($data['user']);
+        // Extract data directly from form fields
+        $title = $request->request->get('title');
+        $description = $request->request->get('description');
+        $statusId = $request->request->get('status');
+        $priorityId = $request->request->get('priority');
+        $createdAt = $request->request->get('created_at');
+        $deadline = $request->request->get('deadline');
+        $userId = $request->request->get('user');
+
+
+        if (!$userId) {
+            return ['error' => 'User ID is missing'];
+        }
+
+        // Find User
+        $user = $this->manager->getRepository(User::class)->find($userId);
         if (!$user) {
             return ['error' => 'User not found'];
         }
 
-        $task = $this->serializer->deserialize($jsonContent, Task::class, 'json', ['ignored_attributes' => ['user']]);
-        $task->setUser($user);
+        // 🔹 Find Status & Priority Entities
+        $status = $this->manager->getRepository(Status::class)->find($statusId);
+        if (!$status) {
+            return ['error' => 'Invalid status'];
+        }
 
+        $priority = $this->manager->getRepository(Priority::class)->find($priorityId);
+        if (!$priority) {
+            return ['error' => 'Invalid priority'];
+        }
+
+        // 🔹 Convert Date Strings to `DateTimeImmutable`
+        try {
+            $createdAtDate = new \DateTimeImmutable($createdAt);
+            $deadlineDate = new \DateTimeImmutable($deadline);
+        } catch (\Exception $e) {
+            return ['error' => 'Invalid date format'];
+        }
+
+        // Handle Image Upload
+        $imageFile = $request->files->get('picture');
+        $imagePath = null;
+
+        if ($imageFile) {
+            $uploadDir = __DIR__.'/../../public/uploads/tasks/';
+            $fileName = uniqid().'.'.$imageFile->guessExtension();
+
+            $imageFile->move($uploadDir, $fileName);
+            $imagePath = '/uploads/tasks/'.$fileName;
+        }
+
+        // Create Task Object
+        $task = new Task();
+        $task->setTitle($title);
+        $task->setDescription($description);
+        $task->setStatus($status);
+        $task->setPriority($priority);
+        $task->setCreatedAt($createdAtDate);
+        $task->setDeadline($deadlineDate);
+        $task->setUser($user);
+        if ($imagePath) {
+            $task->setPicture($imagePath);
+        }
+
+        // Validate Task
         $errors = $this->validator->validate($task);
         if (count($errors) > 0) {
             return ['error' => array_map(fn ($e) => $e->getMessage(), iterator_to_array($errors))];
         }
 
+        // Save Task
         $this->manager->persist($task);
         $this->manager->flush();
 

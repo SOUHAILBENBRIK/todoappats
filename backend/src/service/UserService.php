@@ -33,11 +33,11 @@ class UserService
 
         $file->move($uploadsDir, $fileName);
 
-        $user->setProfileImage('/uploads/images/'.$fileName);
+        $user->setProfileImage('/uploads/user/'.$fileName);
         $this->manager->persist($user);
         $this->manager->flush();
 
-        return '/uploads/images/'.$fileName;
+        return '/uploads/user/'.$fileName;
     }
 
     public function updateUser(User $user, string $jsonContent): array

@@ -89,7 +89,7 @@ final class TaskController extends AbstractController
     public function addTask(Request $request): JsonResponse
     {
         try {
-            $result = $this->taskService->createTask($request->getContent());
+            $result = $this->taskService->createTask($request);
             if (isset($result['error'])) {
                 return $this->responseService->errorResponse(
                     message: $result['error'],

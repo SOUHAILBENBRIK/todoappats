@@ -4,6 +4,7 @@ frontend/.gitignore
 
 # Ignore common dependencies
 node_modules/
+frontend/.pnpm-store
 vendor/
 
 # Ignore build artifacts

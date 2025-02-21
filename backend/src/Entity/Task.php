@@ -16,6 +16,7 @@ class Task
     #[ORM\Column]
     #[Groups('task:read')]
     private ?int $id = null;
+
     #[Assert\NotBlank]
     #[ORM\Column(length: 255)]
     #[Groups('task:read')]
@@ -24,10 +25,6 @@ class Task
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups('task:read')]
     private ?string $description = null;
-
-    #[ORM\Column]
-    #[Groups('task:read')]
-    private ?bool $completed = false;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -49,6 +46,18 @@ class Task
     #[Assert\Type(\DateTimeImmutable::class)]
     private ?\DateTimeImmutable $deadline = null;
 
+    #[ORM\ManyToOne(targetEntity: Priority::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Priority $priority = null;
+
+    #[ORM\ManyToOne(targetEntity: Status::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Status $status = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('task:read')]
+    private ?string $picture = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -62,7 +71,6 @@ class Task
     public function setTitle(string $title): static
     {
         $this->title = $title;
-
         return $this;
     }
 
@@ -74,19 +82,6 @@ class Task
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function isCompleted(): ?bool
-    {
-        return $this->completed;
-    }
-
-    public function setCompleted(bool $completed): static
-    {
-        $this->completed = $completed;
-
         return $this;
     }
 
@@ -98,7 +93,6 @@ class Task
     public function setUser(User $user): static
     {
         $this->user = $user;
-
         return $this;
     }
 
@@ -109,12 +103,7 @@ class Task
 
     public function setCreatedAt(\DateTimeImmutable|string|null $createdAt): static
     {
-        if (is_string($createdAt)) {
-            $this->createdAt = new \DateTimeImmutable($createdAt);
-        } else {
-            $this->createdAt = $createdAt;
-        }
-
+        $this->createdAt = is_string($createdAt) ? new \DateTimeImmutable($createdAt) : $createdAt;
         return $this;
     }
 
@@ -125,12 +114,7 @@ class Task
 
     public function setCompletedAt(\DateTimeImmutable|string|null $completedAt): static
     {
-        if (is_string($completedAt)) {
-            $this->completedAt = new \DateTimeImmutable($completedAt);
-        } else {
-            $this->completedAt = $completedAt;
-        }
-
+        $this->completedAt = is_string($completedAt) ? new \DateTimeImmutable($completedAt) : $completedAt;
         return $this;
     }
 
@@ -141,12 +125,40 @@ class Task
 
     public function setDeadline(\DateTimeImmutable|string|null $deadline): static
     {
-        if (is_string($deadline)) {
-            $this->deadline = new \DateTimeImmutable($deadline);
-        } else {
-            $this->deadline = $deadline;
-        }
+        $this->deadline = is_string($deadline) ? new \DateTimeImmutable($deadline) : $deadline;
+        return $this;
+    }
 
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(Status $status): static
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function getPriority(): ?Priority
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(Priority $priority): static
+    {
+        $this->priority = $priority;
+        return $this;
+    }
+
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    public function setPicture(?string $picture): static
+    {
+        $this->picture = $picture;
         return $this;
     }
 }
