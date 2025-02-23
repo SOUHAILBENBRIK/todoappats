@@ -8,6 +8,7 @@ import { ref, reactive, watch } from 'vue'
 import { type UserRegistration, registerUser } from '@/api/authApi'
 import InputComponent from '@/components/InputComponent.vue'
 import router from '@/router'
+
 const email = ref('')
 const password = ref('')
 const userName = ref('')
@@ -18,55 +19,29 @@ const age = ref('')
 const repassword = ref('')
 const loading = ref(false)
 const errors = reactive<Record<string, string>>({})
+
 watch(age, (newAge) => {
-  if (isNaN(Number(newAge))) {
-    errors.age = 'Age must be a number'
-  } else {
-    errors.age = ''
-  }
+  errors.age = isNaN(Number(newAge)) ? 'Age must be a number' : ''
 })
 watch(email, (newEmail) => {
-  if (!newEmail.includes('@')) {
-    errors.email = 'Email must contain @'
-  } else {
-    errors.email = ''
-  }
+  errors.email = !newEmail.includes('@') ? 'Email must contain @' : ''
 })
 watch(password, (newPassword) => {
-  if (newPassword.length < 8) {
-    errors.password = 'Password must be at least 8 characters long'
-  } else {
-    errors.password = ''
-  }
+  errors.password = newPassword.length < 8 ? 'Password must be at least 8 characters long' : ''
 })
 watch(repassword, (newRepassword) => {
-  if (newRepassword !== password.value) {
-    errors.repassword = 'Passwords do not match'
-  } else {
-    errors.repassword = ''
-  }
+  errors.repassword = newRepassword !== password.value ? 'Passwords do not match' : ''
 })
 watch(userName, (newUserName) => {
-  if (newUserName.length < 4) {
-    errors.userName = 'Username must be at least 4 characters long'
-  } else {
-    errors.userName = ''
-  }
+  errors.userName = newUserName.length < 4 ? 'Username must be at least 4 characters long' : ''
 })
 watch(name, (newName) => {
-  if (newName.length < 4) {
-    errors.name = 'Name must be at least 4 characters long'
-  } else {
-    errors.name = ''
-  }
+  errors.name = newName.length < 4 ? 'Name must be at least 4 characters long' : ''
 })
 watch(lastName, (newLastName) => {
-  if (newLastName.length < 4) {
-    errors.lastName = 'Last name must be at least 4 characters long'
-  } else {
-    errors.lastName = ''
-  }
+  errors.lastName = newLastName.length < 4 ? 'Last name must be at least 4 characters long' : ''
 })
+
 function register() {
   const user: UserRegistration = {
     email: email.value,
@@ -76,28 +51,24 @@ function register() {
     lastName: lastName.value,
     age: Number(age.value),
   }
-  if (password.value !== repassword.value) {
-    errors.repassword = 'Passwords do not match'
-    return
-  }
-  if (Object.values(errors).some((error) => error)) {
+  if (password.value !== repassword.value || Object.values(errors).some((error) => error)) {
     return
   }
   if (
-    email.value === '' ||
-    password.value === '' ||
-    userName.value === '' ||
-    name.value === '' ||
-    lastName.value === '' ||
-    age.value === ''
+    !email.value ||
+    !password.value ||
+    !userName.value ||
+    !name.value ||
+    !lastName.value ||
+    !age.value
   ) {
-    errors.email = 'Please fill all the fields'
-    errors.password = 'Please fill all the fields'
-    errors.userName = 'Please fill all the fields'
-    errors.name = 'Please fill all the fields'
-    errors.lastName = 'Please fill all the fields'
-    errors.age = 'Please fill all the fields'
-
+    errors.email =
+      errors.password =
+      errors.userName =
+      errors.name =
+      errors.lastName =
+      errors.age =
+        'Please fill all the fields'
     return
   }
   loading.value = true
@@ -108,123 +79,67 @@ function register() {
   })
 }
 </script>
+
 <template>
-  <main v-if="!loading">
-    <div class="container">
-      <div class="picture">
-        <img :src="picture" alt="picture" />
+  <main v-if="!loading" class="flex flex-col items-center justify-center min-h-screen">
+    <div class="flex flex-col md:flex-row gap-8 items-center w-full max-w-4xl">
+      <div class="hidden md:flex justify-center items-center w-1/2">
+        <img :src="picture" alt="Register" class="max-w-full" />
       </div>
-      <div class="form">
-        <h1 class="title">Sign Up</h1>
+      <div class="flex flex-col gap-4 w-full md:w-1/2 p-6 bg-white shadow-lg rounded-lg">
+        <h1 class="text-3xl font-bold text-gray-900">Sign Up</h1>
         <InputComponent placeHolder="Enter your name" :iconPath="userIcon" v-model="name" />
-        <p class="error" v-if="errors.name">{{ errors.name }}</p>
+        <p class="text-red-500 text-sm" v-if="errors.name">{{ errors.name }}</p>
         <InputComponent
           placeHolder="Enter your last name"
           :iconPath="userIcon"
           v-model="lastName"
         />
-        <p class="error" v-if="errors.lastName">{{ errors.lastName }}</p>
+        <p class="text-red-500 text-sm" v-if="errors.lastName">{{ errors.lastName }}</p>
         <InputComponent
           placeHolder="Enter your user name"
           :iconPath="userIcon"
           v-model="userName"
         />
-        <p class="error" v-if="errors.userName">{{ errors.userName }}</p>
+        <p class="text-red-500 text-sm" v-if="errors.userName">{{ errors.userName }}</p>
         <InputComponent placeHolder="Enter your email" :iconPath="emailIcon" v-model="email" />
-        <p class="error" v-if="errors.email">{{ errors.email }}</p>
+        <p class="text-red-500 text-sm" v-if="errors.email">{{ errors.email }}</p>
         <InputComponent placeHolder="Enter your age" :iconPath="userIcon" v-model="age" />
-        <p class="error" v-if="errors.age">{{ errors.age }}</p>
+        <p class="text-red-500 text-sm" v-if="errors.age">{{ errors.age }}</p>
         <InputComponent
           placeHolder="Enter your password"
           :iconPath="passwordIcon"
           v-model="password"
         />
-        <p class="error" v-if="errors.password">{{ errors.password }}</p>
+        <p class="text-red-500 text-sm" v-if="errors.password">{{ errors.password }}</p>
         <InputComponent
           placeHolder="Renter your password"
           :iconPath="outlinepasswordIcon"
           v-model="repassword"
         />
-        <p class="error" v-if="errors.repassword">{{ errors.repassword }}</p>
-        <div class="checkbox">
-          <input type="checkbox" id="terms" name="terms" value="terms" v-model="checkBox" />
-          <label for="terms">I accept the terms and conditions</label>
+        <p class="text-red-500 text-sm" v-if="errors.repassword">{{ errors.repassword }}</p>
+        <div class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="terms"
+            v-model="checkBox"
+            class="w-4 h-4 text-blue-600 border-gray-300 rounded"
+          />
+          <label for="terms" class="text-gray-600 text-sm">I accept the terms and conditions</label>
         </div>
-        <button @click="register" :disabled="!checkBox">Sign Up</button>
-        <div class="login">
-          <p>Have an account ?</p>
-          <router-link to="/login">Login</router-link>
+        <button
+          @click="register"
+          :disabled="!checkBox"
+          class="bg-red-500 text-white py-2 px-4 rounded w-full disabled:bg-red-300"
+        >
+          Sign Up
+        </button>
+        <div class="flex justify-center gap-2 text-gray-600 text-sm">
+          <p>Have an account?</p>
+          <router-link to="/login" class="text-blue-500">Login</router-link>
         </div>
       </div>
     </div>
   </main>
   <loading v-else message="waiting please" />
 </template>
-<style scoped>
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  height: 100vh;
-  align-items: start;
-  justify-content: center;
-}
-.container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-}
-.picture {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 50vw;
-}
-.title {
-  font-size: 3rem;
-  font-weight: 700;
-  color: black;
-}
-button {
-  background-color: #ff9090;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-}
-button:disabled {
-  background-color: #ff909060;
-  cursor: not-allowed;
-}
-label {
-  color: black;
-  font-weight: 300;
-}
-.checkbox {
-  display: flex;
-  justify-content: start;
-  gap: 10px;
-}
-input {
-  background-color: #ff9090;
-  color: #ff9090;
-}
-.error {
-  color: red;
-  font-size: 0.8rem;
-  font-weight: 300;
-}
-.login {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  color: black;
-  font-weight: 300;
-  font-size: 1rem;
-}
-</style>

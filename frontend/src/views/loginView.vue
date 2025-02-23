@@ -6,6 +6,7 @@ import { ref, reactive, watch } from 'vue'
 import { type UserLogin, loginUser } from '@/api/authApi'
 import InputComponent from '@/components/InputComponent.vue'
 import router from '@/router'
+
 const email = ref('')
 const password = ref('')
 const checkBox = ref(false)
@@ -13,51 +14,37 @@ const loading = ref(false)
 const errors = reactive<Record<string, string>>({})
 
 watch(email, (newEmail) => {
-  if (!newEmail.includes('@')) {
-    errors.email = 'Email must contain @'
-  } else {
-    errors.email = ''
-  }
+  errors.email = newEmail.includes('@') ? '' : 'Email must contain @'
 })
+
 watch(password, (newPassword) => {
-  if (newPassword.length < 8) {
-    errors.password = 'Password must be at least 8 characters long'
-  } else {
-    errors.password = ''
-  }
+  errors.password = newPassword.length >= 8 ? '' : 'Password must be at least 8 characters long'
 })
 
 function login() {
-  const user: UserLogin = {
-    email: email.value,
-    password: password.value,
-  }
-
-  if (Object.values(errors).some((error) => error)) {
+  if (Object.values(errors).some((error) => error) || !email.value || !password.value) {
+    errors.email = email.value ? '' : 'Please fill all the fields'
+    errors.password = password.value ? '' : 'Please fill all the fields'
     return
   }
-  if (email.value === '' || password.value === '') {
-    errors.email = 'Please fill all the fields'
-    errors.password = 'Please fill all the fields'
 
-    return
-  }
   loading.value = true
+  const user: UserLogin = { email: email.value, password: password.value }
   loginUser(user).then((response) => {
-    if (response.status === 201) {
-      router.push({ name: 'home' })
-    }
+    if (response.status === 201) router.push({ name: 'home' })
   })
 }
 </script>
+
 <template>
-  <main v-if="!loading">
-    <div class="container">
-      <div class="form">
-        <h1 class="title">Sign Up</h1>
+  <main v-if="!loading" class="h-screen flex items-center justify-center bg-gray-100">
+    <div class="flex flex-row items-center justify-center gap-10 p-8 bg-white shadow-md rounded-lg">
+      <!-- Form Section -->
+      <div class="flex flex-col gap-5 w-96">
+        <h1 class="text-3xl font-bold text-gray-900">Sign In</h1>
 
         <InputComponent placeHolder="Enter your email" :iconPath="emailIcon" v-model="email" />
-        <p class="error" v-if="errors.email">{{ errors.email }}</p>
+        <p class="text-red-500 text-sm" v-if="errors.email">{{ errors.email }}</p>
 
         <InputComponent
           placeHolder="Enter your password"
@@ -65,87 +52,38 @@ function login() {
           v-model="password"
           :isPassword="true"
         />
-        <p class="error" v-if="errors.password">{{ errors.password }}</p>
+        <p class="text-red-500 text-sm" v-if="errors.password">{{ errors.password }}</p>
 
-        <div class="checkbox">
-          <input type="checkbox" id="terms" name="terms" value="terms" v-model="checkBox" />
-          <label for="terms">Remember Me</label>
+        <!-- Checkbox -->
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="terms" name="terms" v-model="checkBox" class="w-4 h-4" />
+          <label for="terms" class="text-gray-700 text-sm">Remember Me</label>
         </div>
-        <button @click="login">Log in</button>
-        <div class="register">
-          <p>Don't have account</p>
-          <router-link to="/register">Create One</router-link>
+
+        <!-- Login Button -->
+        <button
+          @click="login"
+          class="bg-red-400 text-white py-3 rounded-lg w-full hover:bg-red-500 transition"
+        >
+          Log in
+        </button>
+
+        <!-- Register Link -->
+        <div class="flex justify-center gap-2 text-gray-700 text-sm">
+          <p>Don't have an account?</p>
+          <router-link to="/register" class="text-red-500 font-medium hover:underline">
+            Create One
+          </router-link>
         </div>
       </div>
-      <div class="picture">
-        <img :src="picture" alt="picture" />
+
+      <!-- Image Section -->
+      <div class="hidden md:flex w-1/2">
+        <img :src="picture" alt="Login Illustration" class="object-cover w-full h-auto" />
       </div>
     </div>
   </main>
+
+  <!-- Loading Component -->
   <loading v-else message="waiting please" />
 </template>
-<style scoped>
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  height: 100vh;
-  align-items: start;
-  justify-content: center;
-}
-.container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-}
-.picture {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 50vw;
-}
-.title {
-  font-size: 3rem;
-  font-weight: 700;
-  color: black;
-}
-button {
-  background-color: #ff9090;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-}
-
-label {
-  color: black;
-  font-weight: 300;
-}
-.checkbox {
-  display: flex;
-  justify-content: start;
-  gap: 10px;
-}
-input {
-  background-color: #ff9090;
-  color: #ff9090;
-}
-.error {
-  color: red;
-  font-size: 0.8rem;
-  font-weight: 300;
-}
-.register {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  color: black;
-  font-weight: 300;
-  font-size: 1rem;
-}
-</style>

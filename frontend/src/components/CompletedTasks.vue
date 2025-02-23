@@ -50,74 +50,23 @@ const tasks: Task[] = [
 </script>
 
 <template>
-  <div class="todo-list">
-    <div class="header">
+  <div
+    class="bg-gray-100 flex flex-col justify-between items-start gap-5 w-full shadow-lg h-1/2 p-2.5"
+  >
+    <div class="flex flex-row gap-2.5 items-center">
       <img :src="completedIcon" alt="completed image" />
-      <p>Completed Task</p>
+      <p class="text-black">Completed Task</p>
     </div>
-
-    
-    <div class="tasks">
+    <div class="flex flex-col gap-2.5 p-5 w-full h-5/6 overflow-y-auto">
       <div v-if="tasks.length === 0">
         <p>No tasks available</p>
       </div>
-      <TaskItem v-for="task in tasks" :key="task.id" :task="task" />
+      <TaskItem
+        v-for="task in tasks"
+        :key="task.id"
+        :task="task"
+        :onClick="() => console.log('')"
+      />
     </div>
   </div>
 </template>
-
-<style scoped>
-.todo-list {
-  background-color: #f5f5f5;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: start;
-  gap: 20px;
-  width: 100%;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-  height: 50%;
-  padding: 10px 10px;
-}
-.header {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: center;
-  justify-content: start;
-}
-.date-div {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: center;
-  justify-content: start;
-  padding-left: 20px;
-}
-.date-div p {
-  color: black;
-}
-.header p {
-  color: black;
-}
-.m-header {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  width: 100%;
-  border-radius: 10px;
-  color: white;
-}
-.tasks {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 20px;
-  width: 100%;
-  height: 85%;
-  overflow-y: auto;
-}
-</style>

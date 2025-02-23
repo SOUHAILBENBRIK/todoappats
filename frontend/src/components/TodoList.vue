@@ -51,81 +51,26 @@ const tasks: Task[] = [
 </script>
 
 <template>
-  <div class="todo-list">
-    <div class="m-header">
-      <div class="header">
+  <div class=" bg-gray-100 flex flex-col justify-between items-start gap-5 w-1/2 shadow-lg h-full">
+    <div class="flex flex-row gap-1 justify-between items-center p-2.5 w-full rounded-lg text-white">
+      <div class="flex flex-row gap-2.5 items-center justify-start">
         <img :src="paddingIcon" alt="padding image" />
-        <p>To-Do</p>
+        <p class="text-black">To-Do</p>
       </div>
-      <div class="header">
+      <div class="flex flex-row gap-2.5 items-center justify-start">
         <img :src="addIcon" alt="add icon" />
-        <p>Add Task</p>
+        <p class="text-black">Add Task</p>
       </div>
     </div>
-    <div class="date-div">
-      <p>{{ date }}</p>
-      <p style="color: blue">today</p>
+    <div class="flex flex-row gap-2.5 items-center justify-start pl-5">
+      <p class="text-black">{{ date }}</p>
+      <p class="text-blue-500">today</p>
     </div>
-    <div class="tasks">
+    <div class="flex flex-col gap-2.5 p-5 w-full h-5/6 overflow-y-auto">
       <div v-if="tasks.length === 0">
         <p>No tasks available</p>
       </div>
-      <TaskItem v-for="task in tasks" :key="task.id" :task="task" />
+      <TaskItem v-for="task in tasks" :key="task.id" :task="task" :onClick="()=>console.log('hi')"/>
     </div>
   </div>
 </template>
-
-<style scoped>
-.todo-list {
-  background-color: #f5f5f5;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: start;
-  gap: 20px;
-  width: 50%;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-  height: 100%;
-}
-.header {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: center;
-  justify-content: start;
-}
-.date-div {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: center;
-  justify-content: start;
-  padding-left: 20px;
-}
-.date-div p {
-  color: black;
-}
-.header p {
-  color: black;
-}
-.m-header {
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  width: 100%;
-  border-radius: 10px;
-  color: white;
-}
-.tasks {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 20px;
-  width: 100%;
-  height: 85%;
-  overflow-y: auto;
-}
-</style>

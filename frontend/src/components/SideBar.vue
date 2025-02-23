@@ -1,4 +1,5 @@
 <script setup>
+import { useRouter } from 'vue-router'
 import dashboardIcon from '../assets/icons/dashboard.svg'
 import logoutIcon from '../assets/icons/logout.svg'
 import vitalTasksIcon from '../assets/icons/vital.svg'
@@ -7,134 +8,71 @@ import helpIcon from '../assets/icons/help.svg'
 import categoryIcon from '../assets/icons/category.svg'
 import setingIcon from '../assets/icons/settings.svg'
 import userIcon from '../assets/icons/user.svg'
+const router = useRouter()
+function logout() {
+  router.push('/login')
+}
 </script>
 
 <template>
-  <div class="sidebar">
-    <div class="profile-container">
-      <img :src="userIcon" alt="logo" class="profile" />
-      <p>Souhail Ben Brik</p>
-      <p>benbriksouhail43@gmail.com</p>
+  <div class="bg-red-400 h-[93vh] flex flex-col justify-between items-start gap-5 w-[12vw] p-4">
+    <!-- Profile -->
+    <div class="flex flex-col items-center gap-2">
+      <img :src="userIcon" alt="Profile" class="bg-white rounded-full h-20 w-20" />
+      <p class="text-black text-sm font-semibold">Souhail Ben Brik</p>
+      <p class="text-black text-xs">benbriksouhail43@gmail.com</p>
     </div>
-    <div class="sidebar-header">
-      <div class="elementD">
-        <img :src="dashboardIcon" alt="dashboard icon" />
-        <p>Dashboard</p>
+
+    <!-- Sidebar Navigation -->
+    <div class="flex flex-col gap-4 w-full">
+      <div
+        class="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-md cursor-pointer"
+        @click="router.push('/dashboard')"
+      >
+        <img :src="dashboardIcon" alt="Dashboard" class="h-6 w-6" />
+        <p class="text-base font-medium">Dashboard</p>
       </div>
-      
-      <div class="element">
-        <img :src="tasksIcon" alt="tasks icon" />
-        <p>My Task</p>
+
+      <div
+        class="flex items-center gap-2 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-white hover:text-black"
+        @click="router.push('/tasks')"
+      >
+        <img :src="tasksIcon" alt="Tasks" class="h-6 w-6" />
+        <p class="text-base font-medium">My Task</p>
       </div>
-      <div class="element">
-        <img :src="categoryIcon" alt="category icon" />
-        <p>Task Categories</p>
+
+      <div
+        class="flex items-center gap-2 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-white hover:text-black"
+        @click="router.push('/categories')"
+      >
+        <img :src="categoryIcon" alt="Categories" class="h-6 w-6" />
+        <p class="text-base font-medium">Categories</p>
       </div>
-      <div class="element">
-        <img :src="setingIcon" alt="settings icon" />
-        <p>Profile</p>
+
+      <div
+        class="flex items-center gap-2 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-white hover:text-black"
+        @click="router.push('/profile')"
+      >
+        <img :src="setingIcon" alt="Settings" class="h-6 w-6" />
+        <p class="text-base font-medium">Profile</p>
       </div>
-      <div class="element">
-        <img :src="helpIcon" alt="help icon" />
-        <p>Help</p>
+
+      <div
+        class="flex items-center gap-2 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-white hover:text-black"
+        @click="router.push('/help')"
+      >
+        <img :src="helpIcon" alt="Help" class="h-6 w-6" />
+        <p class="text-base font-medium">Help</p>
       </div>
     </div>
-    <div class="sidebar-footer">
-      <img :src="logoutIcon" alt="logout icon" />
-      <p>Log out</p>
+
+    <!-- Logout -->
+    <div
+      class="flex items-center justify-center gap-4 bg-opacity-20 bg-red-300 px-2 py-2 rounded-2xl cursor-pointer hover:bg-opacity-40 w-full"
+      @click="logout"
+    >
+      <img :src="logoutIcon" alt="Logout" class="h-6 w-6" />
+      <p class="text-base font-medium text-white">Log out</p>
     </div>
   </div>
 </template>
-
-<style scoped>
-.sidebar {
-  background-color: #ff6767;
-  height: 92vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: start;
-  gap: 20px;
-  width: 12vw;
-  position: fixed;
-  margin-top: 8vh;
-}
-.sidebar-header {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  justify-content: start;
-  align-items: start;
-  width: 12vw;
-  height: 92vh;
-}
-.element {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: start;
-  justify-content: start;
-  width: 40xp;
-  padding: 10px 5px;
-  width: 90%;
-  border-radius: 8px;
-  margin-left: 20px;
-}
-.elementD {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: start;
-  justify-content: start;
-  width: 40xp;
-  padding: 10px 5px;
-  width: 90%;
-  border-radius: 8px;
-  margin-left: 20px;
-  background-color: white;
-  color: black;
-}
-.element p {
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-}
-.element img {
-  height: 30px;
-  width: 30px;
-}
-.profile {
-  background-color: white;
-  border-radius: 100%;
-  height: 80px;
-  width: 80px;
-}
-.profile-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-.profile-container p {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: black;
-}
-.sidebar-footer {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: start;
-  justify-content: center;
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-  border-radius: 8px;
-  width: 90%;
-  margin-left: 8px;
-  margin-bottom: 20px;
-  cursor: pointer;
-}
-</style>

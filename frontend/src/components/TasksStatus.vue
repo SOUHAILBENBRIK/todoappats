@@ -22,41 +22,31 @@ const chartData = ref({
 const chartOptions = ref({
   responsive: true,
   plugins: {
+    title: {
+      display: false,
+      text: 'Tasks Status',
+    },
     legend: {
-      position: 'top',
+      display: false,
     },
   },
 })
 </script>
 
 <template>
-  <div class="tasks-status">
-    <div style="display: flex; flex-direction: row; gap: 20px; align-items: center">
+  <div class="bg-gray-100 flex flex-col justify-start items-start gap-5 shadow-lg h-1/2 p-2.5">
+    <div class="flex flex-row gap-5 items-center">
       <img :src="completedTask" alt="icon" />
-      <p>Task Status</p>
+      <p class="text-black">Task Status</p>
     </div>
 
-    <div
-      style="height: 70%; width: 100%; display: flex; justify-content: center; align-items: center"
-    >
+    <div class="flex flex-col justify-center items-center h-[70%] w-full">
       <Pie :data="chartData" :options="chartOptions" />
+    </div>
+    <div class="w-full flex flex-row gap-5 items-center justify-around">
+      <p class="text-base text-black">Completed <span class="text-[#36A2EB]"> 40%</span></p>
+      <p class="text-base text-black">In Progress<span class="text-[#FFCE56]"> 35%</span></p>
+      <p class="text-base text-black">Pending <span class="text-[#FF6384]"> 25%</span></p>
     </div>
   </div>
 </template>
-
-<style scoped>
-.tasks-status {
-  background-color: #f5f5f5;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: start;
-  gap: 20px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-  height: 50%;
-  padding: 10px 10px;
-}
-p {
-  color: black;
-}
-</style>

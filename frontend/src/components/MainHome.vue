@@ -1,52 +1,20 @@
 <script setup lang="ts">
-import TodoList from './TodoList.vue';
-import TaskStatus from './TasksStatus.vue';
-import CompletedTasks from './CompletedTasks.vue';
+import TodoList from './TodoList.vue'
+import TaskStatus from './TasksStatus.vue'
+import CompletedTasks from './CompletedTasks.vue'
 </script>
+
 <template>
-  <div class="main-home">
-    <p class="title">Welcome Back , Souhail</p>
-    <div class="main-content">
+  <div class="h-full w-full pt-10 bg-white flex flex-col justify-start items-center gap-5">
+    <p class="text-2xl font-bold w-full text-black pl-7">Welcome Back , Souhail</p>
+    <div
+      class="flex flex-row gap-5 justify-start items-start p-5 border border-gray-300 border-opacity-30 h-[80vh] w-[80vw] rounded-lg"
+    >
       <TodoList />
-      <div style="width: 50%; height: 100%; display: flex; flex-direction: column; gap: 20px">
+      <div class="w-1/2 h-full flex flex-col gap-5">
         <TaskStatus />
         <CompletedTasks />
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.main-home {
-  height: 92vh;
-  width: 88vw;
-  margin-left: 12vw;
-  margin-top: 8vh;
-  padding-top: 5px;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: center;
-  gap: 20px;
-}
-.title {
-  font-size: 2rem;
-  font-weight: 700;
-  width: 100%;
-  color: black;
-  padding-left: 30px;
-}
-.main-content {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  justify-content: start;
-  align-items: start;
-  padding: 20px;
-  border: rgba(180, 180, 180, 0.3) 1px solid;
-  height: 80vh;
-  width: 80vw;
-  border-radius: 10px;
-}
-</style>

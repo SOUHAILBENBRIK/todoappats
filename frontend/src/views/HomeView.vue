@@ -4,17 +4,16 @@ import NavBar from '../components/NavBar.vue'
 import MainHome from '../components/MainHome.vue'
 </script>
 <template>
-  <NavBar />
-  <div class="container">
-    <SideBar />
-    <MainHome />
+  <div>
+    <NavBar />
+    <div class="flex flex-row items-start justify-start w-full h-full">
+      <div class="h-full w-full flex flex-row gap-5">
+        <SideBar />
+
+        <div class="w-full h-full pt-5">
+          <RouterView />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-<style scoped>
-.container {
-  display: flex;
-  flex-direction: row;
-  align-items: start;
-  width: 100vw;
-}
-</style>
