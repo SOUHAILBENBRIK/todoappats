@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Task } from '@/entity/tasks'
-import paddingIcon from '../assets/icons/Pending.svg'
-import addIcon from '../assets/icons/add.svg'
+import completedIcon from '../assets/icons/Book.svg'
 import TaskItem from './TaskItem.vue'
 const date = new Date().toDateString().split(' ').slice(1).join(' ')
 const tasks: Task[] = [
@@ -52,20 +51,12 @@ const tasks: Task[] = [
 
 <template>
   <div class="todo-list">
-    <div class="m-header">
-      <div class="header">
-        <img :src="paddingIcon" alt="padding image" />
-        <p>To-Do</p>
-      </div>
-      <div class="header">
-        <img :src="addIcon" alt="add icon" />
-        <p>Add Task</p>
-      </div>
+    <div class="header">
+      <img :src="completedIcon" alt="completed image" />
+      <p>Completed Task</p>
     </div>
-    <div class="date-div">
-      <p>{{ date }}</p>
-      <p style="color: blue">today</p>
-    </div>
+
+    
     <div class="tasks">
       <div v-if="tasks.length === 0">
         <p>No tasks available</p>
@@ -83,9 +74,10 @@ const tasks: Task[] = [
   justify-content: space-between;
   align-items: start;
   gap: 20px;
-  width: 50%;
+  width: 100%;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-  height: 100%;
+  height: 50%;
+  padding: 10px 10px;
 }
 .header {
   display: flex;
@@ -111,10 +103,10 @@ const tasks: Task[] = [
 .m-header {
   display: flex;
   flex-direction: row;
-  gap: 5px;
+  gap: 20px;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 20px;
   width: 100%;
   border-radius: 10px;
   color: white;

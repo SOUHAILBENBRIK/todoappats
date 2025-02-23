@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import TodoList from './TodoList.vue';
+import TaskStatus from './TasksStatus.vue';
+import CompletedTasks from './CompletedTasks.vue';
 </script>
 <template>
   <div class="main-home">
     <p class="title">Welcome Back , Souhail</p>
     <div class="main-content">
-      <TodoList/>
-      <div>
-        
+      <TodoList />
+      <div style="width: 50%; height: 100%; display: flex; flex-direction: column; gap: 20px">
+        <TaskStatus />
+        <CompletedTasks />
       </div>
-      
     </div>
   </div>
 </template>
@@ -47,6 +49,4 @@ import TodoList from './TodoList.vue';
   width: 80vw;
   border-radius: 10px;
 }
-
-
 </style>

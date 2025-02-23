@@ -21,10 +21,7 @@ import userIcon from '../assets/icons/user.svg'
         <img :src="dashboardIcon" alt="dashboard icon" />
         <p>Dashboard</p>
       </div>
-      <div class="element">
-        <img :src="vitalTasksIcon" alt="vital icon" />
-        <p>Vital Task</p>
-      </div>
+      
       <div class="element">
         <img :src="tasksIcon" alt="tasks icon" />
         <p>My Task</p>
@@ -35,7 +32,7 @@ import userIcon from '../assets/icons/user.svg'
       </div>
       <div class="element">
         <img :src="setingIcon" alt="settings icon" />
-        <p>Settings</p>
+        <p>Profile</p>
       </div>
       <div class="element">
         <img :src="helpIcon" alt="help icon" />

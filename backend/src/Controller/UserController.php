@@ -102,11 +102,16 @@ final class UserController extends AbstractController
         }
     }
 
-    #[Route('/{id}', name: 'delete_user', methods: ['DELETE'])]
+    #[Route('/{id<\d+>}', name: 'delete_user', methods: ['DELETE'])]
     public function deleteUser($id): JsonResponse
     {
         try {
-            $result = $this->userService->deleteUser($id);
+            $user = $this->getUser();
+            if (!$user instanceof User) {
+                throw new \LogicException('User not found or invalid.');
+            }
+
+            $result = $this->userService->deleteUser($user);
 
             return $this->responseService->successResponse(
                 message: $result['success'],

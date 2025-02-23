@@ -27,6 +27,7 @@ class UserService
         return $this->serializer->serialize($users, 'json', ['groups' => 'user']);
     }
 
+
     public function uploadProfileImage(User $user, mixed $file, string $uploadsDir): string
     {
         $fileName = uniqid().'.'.$file->guessExtension();
@@ -73,6 +74,7 @@ class UserService
 
     public function deleteUser(User $user): array
     {
+
         $this->manager->remove($user);
         $this->manager->flush();
 

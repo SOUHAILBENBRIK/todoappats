@@ -26,8 +26,8 @@ class Task
     #[Groups('task:read')]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tasks')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Groups('task:read')]
     private ?User $user = null;
 
