@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { useErroHandling } from '@/stores/general'
 const props = defineProps({
   error: String,
   statusCode: String,
@@ -8,6 +9,7 @@ const props = defineProps({
 const router = useRouter()
 
 function goHome() {
+  useErroHandling().changeError(false)
   router.push(props)
 }
 </script>

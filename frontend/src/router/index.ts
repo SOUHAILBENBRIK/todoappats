@@ -17,7 +17,7 @@ const router = createRouter({
       component: HomeView,
       children: [
         { path: '/profile', component: AccountInformation },
-        { path: '/daskboard', component: MainHome },
+        { path: '/dashboard', component: MainHome },
         { path: '/categories', component: TasksCategories },
         {
           path: '/tasks',

@@ -9,7 +9,7 @@ const date = new Date().toISOString().split('T')[0]
 <template>
   <div class="flex justify-between items-center bg-gray-100 w-full h-16 shadow-md px-4 mx-4">
     <!-- Title -->
-    <p class="text-2xl font-bold ml-5 text-black">Dash<span class="text-red-400">Board</span></p>
+    <p class="text-2xl font-bold ml-5 text-black">Dash<span class=" text-amber-300">Board</span></p>
 
     <!-- Search -->
     <div class="flex">
@@ -18,17 +18,17 @@ const date = new Date().toISOString().split('T')[0]
         placeholder="Search"
         class="w-80 h-11 text-black bg-white shadow-md rounded-l-md px-3 border-none focus:outline-none"
       />
-      <button class="bg-red-400 text-white h-11 px-4 rounded-r-md">
+      <button class="bg-amber-300 text-white h-11 px-4 rounded-r-md">
         <img :src="searchIcon" alt="Search Icon" />
       </button>
     </div>
 
     <!-- Notification & Calendar -->
     <div class="flex items-center gap-2">
-      <button class="bg-red-400 text-white h-11 w-11 flex items-center justify-center rounded-md">
+      <button class="bg-amber-400 text-white h-11 w-11 flex items-center justify-center rounded-md">
         <img :src="notificationIcon" alt="Notification" />
       </button>
-      <button class="bg-red-400 text-white h-11 w-11 flex items-center justify-center rounded-md">
+      <button class="bg-amber-400 text-white h-11 w-11 flex items-center justify-center rounded-md">
         <img :src="calanderIcon" alt="Calendar" />
       </button>
     </div>

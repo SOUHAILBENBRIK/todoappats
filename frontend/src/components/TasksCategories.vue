@@ -49,7 +49,7 @@ const priority: Array<Priority> = [
     class="w-[87vw] h-[90vh] flex flex-col items-start justify-start border border-black rounded-2xl px-10"
   >
     <div class="w-full flex flex-row items-center justify-between pt-4 pb-8">
-      <p class="text-red-400 text-2xl">Task Categories</p>
+      <p class="text-amber-400 text-2xl">Task Categories</p>
       <p class="text-black underline cursor-pointer" @click="router.push('/')">Go Back</p>
     </div>
     <div class="w-full py-10">

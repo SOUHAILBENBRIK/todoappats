@@ -2,7 +2,6 @@
 import { useRouter } from 'vue-router'
 import dashboardIcon from '../assets/icons/dashboard.svg'
 import logoutIcon from '../assets/icons/logout.svg'
-import vitalTasksIcon from '../assets/icons/vital.svg'
 import tasksIcon from '../assets/icons/tasks.svg'
 import helpIcon from '../assets/icons/help.svg'
 import categoryIcon from '../assets/icons/category.svg'
@@ -16,7 +15,7 @@ function logout() {
 </script>
 
 <template>
-  <div class="bg-red-400 h-[93vh] flex flex-col justify-between items-start gap-5 w-[12vw] p-4">
+  <div class=" bg-amber-400 h-[93vh] flex flex-col justify-between items-start gap-5 w-[12vw] p-4">
     <!-- Profile -->
     <div class="flex flex-col items-center gap-2">
       <img :src="userIcon" alt="Profile" class="bg-white rounded-full h-20 w-20" />
@@ -69,7 +68,7 @@ function logout() {
 
     <!-- Logout -->
     <div
-      class="flex items-center justify-center gap-4 bg-opacity-20 bg-red-300 px-2 py-2 rounded-2xl cursor-pointer hover:bg-opacity-40 w-full"
+      class="flex items-center justify-center gap-4 bg-opacity-20 bg-amber-500 px-2 py-2 rounded-2xl cursor-pointer hover:bg-opacity-40 w-full"
       @click="logout"
     >
       <img :src="logoutIcon" alt="Logout" class="h-6 w-6" />

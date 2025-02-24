@@ -41,11 +41,11 @@ watch(lastName, (newLastName) => {
     class="w-[87vw] h-[90vh] flex flex-col items-start justify-start border border-black rounded-2xl px-10"
   >
     <div class="w-full flex flex-row items-center justify-between pt-4 pb-8">
-      <p class="text-red-400 text-2xl">Account Information</p>
+      <p class="text-amber-500 text-2xl">Account Information</p>
       <p class="text-black underline cursor-pointer" @click="router.push('/dashboard')">Go Back</p>
     </div>
     <div
-      class="w-full flex flex-row items-center justify-start gap-5 py-3 px-5 bg-red-300 rounded-3xl"
+      class="w-full flex flex-row items-center justify-start gap-5 py-3 px-5 bg-amber-300 rounded-3xl"
     >
       <img :src="userIcon" alt="user icon" class="w-20 h-20 bg-gray-200 rounded-full p-2" />
       <div class="flex flex-col gap-2">
@@ -72,7 +72,7 @@ watch(lastName, (newLastName) => {
       <p class="text-red-500 text-sm" v-if="errors.password">{{ errors.password }}</p>
     </div>
     <div class="w-full flex flex-row justify-center gap-5 py-6">
-      <button class="w-[65%] text-black bg-red-400 rounded-3xl py-4">Update Info</button>
+      <button class="w-[65%] text-black bg-amber-400 rounded-3xl py-4">Update Info</button>
     </div>
   </div>
 </template>
