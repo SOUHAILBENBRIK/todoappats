@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\User;
 use App\service\ResponseService;
 use App\service\TaskService;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,9 +33,7 @@ final class TaskController extends AbstractController
             if (!$user  instanceof User) {
                 return $this->responseService->notfoundResponse('User not found');
             }
-            /*if (!$this->isGranted('view_tasks', $user)) {
-                return $this->responseService->accessDeniedResponse('You can see only our tasks');
-            }*/
+
             $tasks = $this->taskService->getAllTasks($user->getId());
 
             return $this->responseService->successResponse(message: 'successfully get All tasks', data: $tasks);
@@ -54,9 +51,6 @@ final class TaskController extends AbstractController
             if (!$user instanceof User) {
                 return $this->responseService->notfoundResponse('User not found');
             }
-            /*if (!$this->isGranted('view_tasks', $user)) {
-                return $this->responseService->accessDeniedResponse('You can see only our tasks');
-            }*/
 
             $tasks = $this->taskService->getAllCompletedTasks($user->getId());
 
@@ -74,9 +68,7 @@ final class TaskController extends AbstractController
             if (!$user instanceof User) {
                 return $this->responseService->notfoundResponse('User not found');
             }
-            if (!$this->isGranted('view_tasks', $user)) {
-                return $this->responseService->accessDeniedResponse('You can see only our tasks');
-            }
+
             $tasks = $this->taskService->getAllMissedTasks($user->getId());
 
             return $this->responseService->successResponse(message: 'successfully get All missed tasks', data: $tasks);
@@ -112,17 +104,18 @@ final class TaskController extends AbstractController
     ): JsonResponse {
         try {
             $task = $this->taskService->getTask($task_id);
-            $taskJson = $serializer->serialize($task, 'json', ['groups' => 'task:read', 'ignored_attributes' => ['user']]);
+
 
             if (!$task) {
                 return $this->responseService->notfoundResponse(
                     message: 'task not found',
                 );
             }
+            $taskJson = $serializer->serialize($task, 'json', ['groups' => 'task:read', 'ignored_attributes' => ['user']]);
 
             return $this->responseService->successResponse(
                 message: 'task retrieved successfully',
-                data: $taskJson
+                data: $task
             );
         } catch (\Exception $e) {
             return $this->responseService->errorResponse(message: $e->getMessage());
@@ -138,16 +131,17 @@ final class TaskController extends AbstractController
             $currentTask = $this->taskService->getTask($task_id);
             if (!$currentTask) {
                 return $this->responseService->notfoundResponse(
-
                     message: 'task not found',
-
                 );
+            }
+            $user = $currentTask->getUser();
+            if (!$this->isGranted('modify_tasks_entities', $user)) {
+                return $this->responseService->accessDeniedResponse('You can update only our tasks');
             }
             $result = $this->taskService->updateTask($currentTask, $request->getContent());
 
             if (isset($result['error'])) {
                 return $this->responseService->errorResponse(
-
                     message: $result['error'],
                     statusCode: Response::HTTP_BAD_REQUEST
                 );
@@ -172,6 +166,10 @@ final class TaskController extends AbstractController
                 return $this->responseService->notfoundResponse(
                     message: 'task not found',
                 );
+            }
+            $user = $currentTask->getUser();
+            if (!$this->isGranted('modify_tasks_entities', $user)) {
+                return $this->responseService->accessDeniedResponse('You can update only our tasks');
             }
             $result = $this->taskService->patchTask($currentTask, json_decode($request->getContent(), true));
 
@@ -202,7 +200,7 @@ final class TaskController extends AbstractController
                 );
             }
             $user = $task->getUser();
-            if (!$this->isGranted('delete_tasks', $user)) {
+            if (!$this->isGranted('modify_tasks_entities', $user)) {
                 return $this->responseService->accessDeniedResponse('You can delete only our tasks');
             }
 
@@ -218,16 +216,13 @@ final class TaskController extends AbstractController
 
     #[Route('/user', name : 'delete_all_tasks', methods : ['Delete'])]
     public function deleteAllTask(
-
     ): JsonResponse {
         try {
             $user = $this->getUser();
             if (!$user instanceof User) {
                 return $this->responseService->notfoundResponse('User not found');
             }
-            if (!$this->isGranted('delete_tasks', $user)) {
-                return $this->responseService->accessDeniedResponse('You can delete only our tasks');
-            }
+
             $result = $this->taskService->deleteAllTasks($user->getId());
 
             return $this->responseService->successResponse(

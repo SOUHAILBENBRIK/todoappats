@@ -61,6 +61,13 @@ class StatusService
     public function updateCustomStatus(int $statusId, string $jsonContent): array
     {
         $status = $this->entityManager->getRepository(Status::class)->find($statusId);
+        if (!$status) {
+            return ['error' => 'Status not found'];
+        }
+        if (!$status->getUser()) {
+            return ['error' => 'you can\'t update default status'];
+        }
+
         $data = json_decode($jsonContent, true);
 
         // Validate JSON structure
@@ -72,7 +79,6 @@ class StatusService
         if ($existingStatus && $existingStatus !== $status) {
             return ['error' => 'Status with this name already exists'];
         }
-
 
         $status->setName($data['name']);
 
@@ -95,6 +101,7 @@ class StatusService
         if (!$status) {
             return ['error' => 'Status not found'];
         }
+
         if (!$status->getUser()) {
             $this->entityManager->remove($status);
             $this->entityManager->flush();
@@ -102,6 +109,6 @@ class StatusService
             return ['success' => 'Status deleted successfully'];
         }
 
-        return ['error' => 'Status deleted can\'t be deleted'];
+        return ['error' => 'Default Status can\'t be deleted'];
     }
 }

@@ -88,7 +88,7 @@ class TaskService
             return ['error' => 'Invalid priority'];
         }
 
-        // 🔹 Convert Date Strings to `DateTimeImmutable`
+        // Convert Date Strings to `DateTimeImmutable`
         try {
             $createdAtDate = new \DateTimeImmutable($createdAt);
             $deadlineDate = new \DateTimeImmutable($deadline);
@@ -150,8 +150,11 @@ class TaskService
 
     public function patchTask(Task $task, array $data): array
     {
-        if (isset($data['completed'])) {
-            $task->setCompleted($data['completed']);
+        if (isset($data['status'])) {
+            $task->setStatus($data['status']);
+        }
+        if (isset($data['priority'])) {
+            $task->setStatus($data['priority']);
         }
 
         $this->manager->flush();

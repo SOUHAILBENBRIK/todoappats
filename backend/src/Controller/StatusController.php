@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\service\PriorityService;
 use App\service\ResponseService;
 use App\service\StatusService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -75,12 +74,9 @@ final class StatusController extends AbstractController
     public function updateStatus(int $statusId, Request $request): JsonResponse
     {
         try {
-            $currentStatus = $this->statusService->getStatus($statusId);
-            if (!$currentStatus) {
-                return $this->responseService->notfoundResponse(
-                    message: 'Status not found',
-                );
-            }
+
+
+
             $result = $this->statusService->updateCustomStatus($statusId, $request->getContent());
 
             if (isset($result['error'])) {

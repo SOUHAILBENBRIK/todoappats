@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Serializer;
 
 #[Route('/priority')]
 final class PriorityController extends AbstractController
@@ -39,12 +40,12 @@ final class PriorityController extends AbstractController
     }
 
     #[Route('/{priority_id<\d+>}', name : 'get_priority', methods: ['GET'])]
-    public function getPriority(int $priorityId): JsonResponse
+    public function getPriority(int $priorityId, Serializer $serializer): JsonResponse
     {
         try {
-            $priority = $this->priorityService->getPriority($priorityId);
+            $prioritySerialized = $serializer->serialize($this->priorityService->getPriority($priorityId), 'json', ['groups' => ['priority:read']]);
 
-            return $this->responseService->successResponse(message: 'successfully get  priority', data: $priority);
+            return $this->responseService->successResponse(message: 'successfully get  priority', data: $prioritySerialized);
         } catch (\Exception $e) {
             return $this->responseService->errorResponse(
                 message : $e->getMessage(),
@@ -75,12 +76,7 @@ final class PriorityController extends AbstractController
     public function updatePriority(int $priorityId, Request $request): JsonResponse
     {
         try {
-            $currentPriority = $this->priorityService->getPriority($priorityId);
-            if (!$currentPriority) {
-                return $this->responseService->notfoundResponse(
-                    message: 'Priority not found',
-                );
-            }
+
             $result = $this->priorityService->updateCustomPriority($priorityId, $request->getContent());
 
             if (isset($result['error'])) {
@@ -102,7 +98,7 @@ final class PriorityController extends AbstractController
     public function deletePriority(int $priorityId): JsonResponse
     {
         try {
-            $priority = $this->priorityService->getPriority($priorityId);
+            $priority = $this->priorityService->deleteCustomPriority($priorityId);
 
             return $this->responseService->successResponse(message: 'successfully get  priority', data: $priority);
         } catch (\Exception $e) {

@@ -29,9 +29,7 @@ class PriorityService
 
     public function getPriority(int $priorityId): string
     {
-        $priority = $this->priorityRepository->find($priorityId);
-
-        return $this->serializer->serialize($priority, 'json', ['groups' => ['priority:read']]);
+        return $this->priorityRepository->find($priorityId);
     }
 
     public function createCustomPriority(Request $request): array
@@ -58,13 +56,12 @@ class PriorityService
         return ['success' => 'Priority created'];
     }
 
-    public function updateCustomPriority(int $priorityId, string $jsonContent): array
+    public function updateCustomPriority(Priority $priority, string $jsonContent): array
     {
         $data = json_decode($jsonContent, true);
-        $priority = $this->entityManager->getRepository(Priority::class)->find($priorityId);
 
-        if (!$priority) {
-            return ['error' => 'Priority not found'];
+        if (!$priority->getUser()) {
+            return ['error' => 'You can\'t update default priority'];
         }
 
         if (!$data || !isset($data['name'])) {
@@ -90,12 +87,13 @@ class PriorityService
         return ['success' => 'Priority updated successfully'];
     }
 
-    public function deleteCustomPriority(int $priorityId): array
+    public function deleteCustomPriority(?Priority $priority): array
     {
-        $priority = $this->entityManager->getRepository(Priority::class)->find($priorityId);
-
         if (!$priority) {
             return ['error' => 'Priority not found'];
+        }
+        if (!$priority->getUser()) {
+            return ['error' => 'You can\'t delete default priority'];
         }
 
         // Remove priority
