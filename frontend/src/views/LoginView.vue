@@ -5,13 +5,16 @@ import picture from '@/assets/images/login.svg'
 import { ref, reactive, watch } from 'vue'
 import { type UserLogin, loginUser } from '@/api/authApi'
 import InputComponent from '@/components/InputComponent.vue'
-import router from '@/router'
+import { useRouter } from 'vue-router'
+import ErrorView from './ErrorView.vue'
 
 const email = ref('')
 const password = ref('')
 const checkBox = ref(false)
 const loading = ref(false)
 const errors = reactive<Record<string, string>>({})
+const router = useRouter()
+const error = ref(false)
 
 watch(email, (newEmail) => {
   errors.email = newEmail.includes('@') ? '' : 'Email must contain @'
@@ -30,14 +33,29 @@ function login() {
 
   loading.value = true
   const user: UserLogin = { email: email.value, password: password.value }
-  loginUser(user).then((response) => {
-    if (response.status === 201) router.push({ name: 'home' })
-  })
+  loginUser(user)
+    .then((response) => {
+      if (response.status === 200) {
+        router.push('/dashboard')
+        localStorage.setItem('token', response.data.token)
+        router.push('/dashboard')
+      } else {
+        console.log('response', response)
+        loading.value = false
+        error.value = true
+      }
+    })
+    .catch((err) => {
+      //console.log('error', err)
+      loading.value = false
+      error.value = true
+    })
 }
 </script>
 
 <template>
-  <main v-if="!loading" class="h-screen flex items-center justify-center bg-gray-100">
+  <ErrorView v-if="error" error="Email or Password are incorect" statusCode="401" path="/login" />
+  <main v-else-if="!loading" class="h-screen flex items-center justify-center bg-gray-100">
     <div class="flex flex-row items-center justify-center gap-10 p-8 bg-white shadow-md rounded-lg">
       <!-- Form Section -->
       <div class="flex flex-col gap-5 w-96">

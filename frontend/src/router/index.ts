@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import AboutView from '@/views/AboutView.vue'
-import LoginView from '@/views/loginView.vue'
-import RegisterView from '@/views/registerView.vue'
+import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
 import AccountInformation from '../components/AccountInformation.vue'
 import MainHome from '@/components/MainHome.vue'
 import TasksCategories from '@/components/TasksCategories.vue'
@@ -26,7 +26,7 @@ const router = createRouter({
         {
           path: '/:pathMatch(.*)*',
           name: 'not-found',
-          component: () => NotFound,
+          component: NotFound,
         },
       ],
       meta: {
@@ -52,7 +52,7 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
-      component: () => NotFound,
+      component: NotFound,
     },
   ],
 })

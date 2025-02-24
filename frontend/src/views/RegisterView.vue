@@ -7,7 +7,7 @@ import picture from '@/assets/images/register.svg'
 import { ref, reactive, watch } from 'vue'
 import { type UserRegistration, registerUser } from '@/api/authApi'
 import InputComponent from '@/components/InputComponent.vue'
-import router from '@/router'
+import { useRouter } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
@@ -19,7 +19,7 @@ const age = ref('')
 const repassword = ref('')
 const loading = ref(false)
 const errors = reactive<Record<string, string>>({})
-
+const router = useRouter()
 watch(age, (newAge) => {
   errors.age = isNaN(Number(newAge)) ? 'Age must be a number' : ''
 })
@@ -74,7 +74,9 @@ function register() {
   loading.value = true
   registerUser(user).then((response) => {
     if (response.status === 201) {
-      router.push({ name: 'home' })
+      console.log('response', response.data)
+      localStorage.setItem('token', response.data.token)
+      router.push('/dashboard')
     }
   })
 }

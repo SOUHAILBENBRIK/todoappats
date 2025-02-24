@@ -10,6 +10,7 @@ import setingIcon from '../assets/icons/settings.svg'
 import userIcon from '../assets/icons/user.svg'
 const router = useRouter()
 function logout() {
+  localStorage.removeItem('token')
   router.push('/login')
 }
 </script>
