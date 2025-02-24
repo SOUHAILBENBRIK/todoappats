@@ -8,12 +8,12 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class UserVoter extends Voter
 {
-    public const VIEW_TASKS = 'view_tasks';
+    public const DELETE_TASKS = 'delete_tasks';
 
     protected function supports(string $attribute, $subject): bool
     {
-        // The subject should be a User entity, and the attribute must be 'view_tasks'
-        return self::VIEW_TASKS === $attribute && $subject instanceof User;
+        // The subject should be a User entity, and the attribute must be 'delete_tasks'
+        return self::DELETE_TASKS === $attribute && $subject instanceof User;
     }
 
     protected function voteOnAttribute(string $attribute, $user, TokenInterface $token): bool

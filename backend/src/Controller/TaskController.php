@@ -25,19 +25,18 @@ final class TaskController extends AbstractController
         $this->responseService = $responseService;
     }
 
-    #[Route('/user/{id<\d+>}', name: 'get_all-tasks', methods: ['GET'])]
+    #[Route('/user', name: 'get_all-tasks', methods: ['GET'])]
     public function getAllTasks(
-        int $id,
-        EntityManagerInterface $entityManager,
     ): JsonResponse {
         try {
-            $user = $entityManager->getRepository(User::class)->find($id);
-            if (!$user) {
+            $user = $this->getUser();
+
+            if (!$user  instanceof User) {
                 return $this->responseService->notfoundResponse('User not found');
             }
-            if (!$this->isGranted('view_tasks', $user)) {
+            /*if (!$this->isGranted('view_tasks', $user)) {
                 return $this->responseService->accessDeniedResponse('You can see only our tasks');
-            }
+            }*/
             $tasks = $this->taskService->getAllTasks($user->getId());
 
             return $this->responseService->successResponse(message: 'successfully get All tasks', data: $tasks);
@@ -46,17 +45,18 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route('/completed/user/{id<\d+>}', name: 'get_completed_tasks', methods: ['GET'])]
-    public function getCompletedTasks(int $id, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/completed/user}', name: 'get_completed_tasks', methods: ['GET'])]
+    public function getCompletedTasks(): JsonResponse
     {
         try {
-            $user = $entityManager->getRepository(User::class)->find($id);
-            if (!$user) {
+            $user = $this->getUser();
+
+            if (!$user instanceof User) {
                 return $this->responseService->notfoundResponse('User not found');
             }
-            if (!$this->isGranted('view_tasks', $user)) {
+            /*if (!$this->isGranted('view_tasks', $user)) {
                 return $this->responseService->accessDeniedResponse('You can see only our tasks');
-            }
+            }*/
 
             $tasks = $this->taskService->getAllCompletedTasks($user->getId());
 
@@ -66,18 +66,18 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route('/missed/user/{user_id<\d+>}', name : 'get_missed_tasks', methods: ['GET'])]
-    public function getMissedTasks(int $user_id, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/missed/user', name : 'get_missed_tasks', methods: ['GET'])]
+    public function getMissedTasks(): JsonResponse
     {
         try {
-            $user = $entityManager->getRepository(User::class)->find($user_id);
-            if (!$user) {
+            $user = $this->getUser();
+            if (!$user instanceof User) {
                 return $this->responseService->notfoundResponse('User not found');
             }
             if (!$this->isGranted('view_tasks', $user)) {
                 return $this->responseService->accessDeniedResponse('You can see only our tasks');
             }
-            $tasks = $this->taskService->getAllMissedTasks($user_id);
+            $tasks = $this->taskService->getAllMissedTasks($user->getId());
 
             return $this->responseService->successResponse(message: 'successfully get All missed tasks', data: $tasks);
         } catch (\Exception $e) {
@@ -201,6 +201,10 @@ final class TaskController extends AbstractController
                     message: 'task not found',
                 );
             }
+            $user = $task->getUser();
+            if (!$this->isGranted('delete_tasks', $user)) {
+                return $this->responseService->accessDeniedResponse('You can delete only our tasks');
+            }
 
             $result = $this->taskService->deleteTask($task);
 
@@ -212,20 +216,19 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route('/user/{user_id<\d+>}', name : 'delete_all_tasks', methods : ['Delete'])]
+    #[Route('/user', name : 'delete_all_tasks', methods : ['Delete'])]
     public function deleteAllTask(
-        int $user_id,
-        EntityManagerInterface $entityManager,
+
     ): JsonResponse {
         try {
-            $user = $entityManager->getRepository(User::class)->find($user_id);
-            if (!$user) {
+            $user = $this->getUser();
+            if (!$user instanceof User) {
                 return $this->responseService->notfoundResponse('User not found');
             }
-            if (!$this->isGranted('view_tasks', $user)) {
-                return $this->responseService->accessDeniedResponse('You can see only our tasks');
+            if (!$this->isGranted('delete_tasks', $user)) {
+                return $this->responseService->accessDeniedResponse('You can delete only our tasks');
             }
-            $result = $this->taskService->deleteAllTasks($user_id);
+            $result = $this->taskService->deleteAllTasks($user->getId());
 
             return $this->responseService->successResponse(
                 message: $result['success'],
