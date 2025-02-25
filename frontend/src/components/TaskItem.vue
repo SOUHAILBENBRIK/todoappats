@@ -24,7 +24,7 @@ const props = defineProps<{
           </p>
         </div>
         <img
-          :src="task.picture"
+          :src="`http://127.0.0.1:8000${task.picture}`"
           alt="task image"
           v-if="task.picture != null"
           class="w-1/5 h-24 rounded-lg object-cover"

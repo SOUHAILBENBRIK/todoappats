@@ -15,7 +15,7 @@ function logout() {
 </script>
 
 <template>
-  <div class=" bg-amber-400 h-[93vh] flex flex-col justify-between items-start gap-5 w-[12vw] p-4">
+  <div class="bg-amber-400 h-[93vh] flex flex-col justify-between items-start gap-5 w-[12vw] p-4">
     <!-- Profile -->
     <div class="flex flex-col items-center gap-2">
       <img :src="userIcon" alt="Profile" class="bg-white rounded-full h-20 w-20" />

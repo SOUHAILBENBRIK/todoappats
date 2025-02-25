@@ -27,7 +27,7 @@ class PriorityService
         return $this->serializer->serialize($priorities, 'json', ['groups' => ['priority:read'], 'ignored_attributes' => ['user']]);
     }
 
-    public function getPriority(int $priorityId): string
+    public function getPriority(int $priorityId): ?Priority
     {
         return $this->priorityRepository->find($priorityId);
     }

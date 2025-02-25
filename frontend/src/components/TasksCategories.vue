@@ -4,7 +4,7 @@ import iconBlock from '@/assets/icons/block.svg'
 import type { Priority } from '@/entity/priority'
 import { type Status } from '@/entity/status'
 import { useRouter } from 'vue-router'
-const router = useRouter();
+const router = useRouter()
 const status: Array<Status> = [
   {
     id: 1,

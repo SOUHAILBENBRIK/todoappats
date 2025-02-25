@@ -15,13 +15,27 @@ const privateAxiosInstance = axios.create({
   },
 })
 
-export const setAuthToken = () => {
+const setAuthToken = () => {
   const token = localStorage.getItem('token')
   if (token) {
-    privateAxiosInstance.defaults.headers['Authorization'] = `Bearer ${token}`
+    privateAxiosInstance.defaults.headers['Authorization'] = `Bearer ${token}` ;
+    
   } else {
     delete privateAxiosInstance.defaults.headers['Authorization']
   }
 }
+
+privateAxiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  },
+)
 
 export { publicAxiosInstance, privateAxiosInstance }

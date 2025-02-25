@@ -9,7 +9,7 @@ const date = new Date().toISOString().split('T')[0]
 <template>
   <div class="flex justify-between items-center bg-gray-100 w-full h-16 shadow-md px-4 mx-4">
     <!-- Title -->
-    <p class="text-2xl font-bold ml-5 text-black">Dash<span class=" text-amber-300">Board</span></p>
+    <p class="text-2xl font-bold ml-5 text-black">Dash<span class="text-amber-300">Board</span></p>
 
     <!-- Search -->
     <div class="flex">

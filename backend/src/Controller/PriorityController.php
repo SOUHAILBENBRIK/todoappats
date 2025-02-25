@@ -76,8 +76,11 @@ final class PriorityController extends AbstractController
     public function updatePriority(int $priorityId, Request $request): JsonResponse
     {
         try {
-
-            $result = $this->priorityService->updateCustomPriority($priorityId, $request->getContent());
+            $priority = $this->priorityService->getPriority($priorityId);
+            if (!$priority) {
+                return $this->responseService->notfoundResponse(message: 'Priority not found');
+            }
+            $result = $this->priorityService->updateCustomPriority($priority, $request->getContent());
 
             if (isset($result['error'])) {
                 return $this->responseService->errorResponse(
@@ -98,7 +101,11 @@ final class PriorityController extends AbstractController
     public function deletePriority(int $priorityId): JsonResponse
     {
         try {
-            $priority = $this->priorityService->deleteCustomPriority($priorityId);
+            $priority = $this->priorityService->getPriority($priorityId);
+            if (!$priority) {
+                return $this->responseService->notfoundResponse(message: 'Priority not found');
+            }
+            $priority = $this->priorityService->deleteCustomPriority($priority);
 
             return $this->responseService->successResponse(message: 'successfully get  priority', data: $priority);
         } catch (\Exception $e) {
