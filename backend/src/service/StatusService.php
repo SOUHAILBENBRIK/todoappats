@@ -27,18 +27,16 @@ class StatusService
         return $this->serializer->serialize($statusList, 'json', ['groups' => ['status:read']]);
     }
 
-    public function getStatus(int $statusId): string
+    public function getStatus(int $statusId): ?Status
     {
-        $status = $this->statusRepository->find($statusId);
-
-        return $this->serializer->serialize($status, 'json', ['groups' => ['status:read']]);
+        return $this->statusRepository->find($statusId);
     }
 
     public function createCustomStatus(Request $request, User $user): array
     {
         $jsonContent = $request->getContent();
         $data = json_decode($jsonContent, true);
-        
+
         $existingStatus = $this->entityManager->getRepository(Status::class)->findOneBy(['name' => $data['name']]);
         if ($existingStatus) {
             return ['error' => 'Status already exists'];
@@ -91,15 +89,9 @@ class StatusService
         return ['success' => 'Status updated successfully'];
     }
 
-    public function deleteCustomStatus(int $statusId): array
+    public function deleteCustomStatus(Status $status): array
     {
-        $status = $this->entityManager->getRepository(Status::class)->find($statusId);
-
-        if (!$status) {
-            return ['error' => 'Status not found'];
-        }
-
-        if (!$status->getUser()) {
+        if ($status->getUser()) {
             $this->entityManager->remove($status);
             $this->entityManager->flush();
 

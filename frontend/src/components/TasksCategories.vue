@@ -5,17 +5,63 @@ import type { Priority } from '@/entity/priority'
 import { type Status } from '@/entity/status'
 import { useRouter } from 'vue-router'
 import { onMounted, ref, provide, watch } from 'vue'
-import { getStatus } from '@/api/statusApi'
-import { getPriority } from '@/api/priorityApi'
+import { getStatus, deleteStatus } from '@/api/statusApi'
+import { getPriority, deletePriority } from '@/api/priorityApi'
 import AddPriority from './AddPriority.vue'
 import AddStatus from './AddStatus.vue'
+import ModifyPriority from './ModifyPriority.vue'
+import ModifyStatus from './ModifyStatus.vue'
+import Loading from './Loading.vue'
 const router = useRouter()
 const status = ref<Status[]>([])
 const priority = ref<Priority[]>([])
 const isNewPriority = ref(false)
 const isNewStatus = ref(false)
+const isEditPriority = ref(false)
+const loading = ref(false)
+const isEditStatus = ref(false)
+const currentPriority = ref<Priority | null>(null)
+const currentStatus = ref<Status | null>(null)
 provide('isNewStatus', isNewStatus)
 provide('isNewPriority', isNewPriority)
+provide('isEditPriority', isEditPriority)
+provide('isEditStatus', isEditStatus)
+
+function deleteStatusF(status: Status) {
+  loading.value = true
+  deleteStatus(status.id)
+    .then((response) => {
+      if (response.status === 200) {
+        loading.value = false
+        getAllStatus()
+      } else {
+        console.log('response', response)
+        loading.value = false
+      }
+    })
+    .catch((err) => {
+      console.log('error', err)
+      loading.value = false
+    })
+}
+function deletePriorityF(priority: Priority) {
+  loading.value = true
+  deletePriority(priority.id)
+    .then((response) => {
+      console.log(response)
+      if (response.status === 200) {
+        loading.value = false
+        getAllPriority()
+      } else {
+        console.log('response', response)
+        loading.value = false
+      }
+    })
+    .catch((err) => {
+      console.log('error', err.message)
+      loading.value = false
+    })
+}
 
 function getAllStatus() {
   getStatus()
@@ -45,6 +91,14 @@ function addPriority() {
 function addStatus() {
   isNewStatus.value = true
 }
+function editStatus(status: Status) {
+  isEditStatus.value = true
+  currentStatus.value = status
+}
+function editPriority(priority: Priority) {
+  isEditPriority.value = true
+  currentPriority.value = priority
+}
 watch(isNewPriority, (newIsNewPriority) => {
   if (!newIsNewPriority) {
     getAllPriority()
@@ -52,6 +106,16 @@ watch(isNewPriority, (newIsNewPriority) => {
 })
 watch(isNewStatus, (newIsNewStatus) => {
   if (!newIsNewStatus) {
+    getAllStatus()
+  }
+})
+watch(isEditPriority, (newIsEditPriority) => {
+  if (!newIsEditPriority) {
+    getAllPriority()
+  }
+})
+watch(isEditStatus, (newIsEditStatus) => {
+  if (!newIsEditStatus) {
     getAllStatus()
   }
 })
@@ -65,6 +129,9 @@ onMounted(() => {
 <template>
   <AddPriority v-if="isNewPriority" />
   <AddStatus v-else-if="isNewStatus" />
+  <ModifyPriority v-else-if="isEditPriority" :priority="currentPriority!" />
+  <ModifyStatus v-else-if="isEditStatus" :status="currentStatus!" />
+  <Loading v-else-if="loading" />
   <div
     class="w-[87vw] h-[90vh] flex flex-col items-start justify-start border border-black rounded-2xl px-10"
     v-else
@@ -102,8 +169,18 @@ onMounted(() => {
               <td class="text-black border-r border-gray-400">{{ item.id }}</td>
               <td class="text-black border-r border-gray-400">{{ item.name }}</td>
               <td class="py-1 flex gap-2 items-center justify-center" v-if="item.user != null">
-                <button class="bg-red-400 text-white w-16 py-1 rounded-md mx-5">Edit</button>
-                <button class="bg-red-400 text-white w-16 py-1 rounded-md">Delete</button>
+                <button
+                  class="bg-red-400 text-white w-16 py-1 rounded-md mx-5"
+                  @click="editStatus(item)"
+                >
+                  Edit
+                </button>
+                <button
+                  class="bg-red-400 text-white w-16 py-1 rounded-md"
+                  @click="deleteStatusF(item)"
+                >
+                  Delete
+                </button>
               </td>
               <td class="flex items-center justify-center py-2" v-else>
                 <img :src="iconBlock" alt="block icon" class="h-5 w-5" />
@@ -144,8 +221,18 @@ onMounted(() => {
               <td class="text-black border-r border-gray-400">{{ item.name }}</td>
               <td class="text-black border-r border-gray-400">{{ item.level }}</td>
               <td class="py-1 flex gap-2 items-center justify-center" v-if="item.user != null">
-                <button class="bg-red-400 text-white w-16 py-1 rounded-md mx-5">Edit</button>
-                <button class="bg-red-400 text-white w-16 py-1 rounded-md">Delete</button>
+                <button
+                  class="bg-red-400 text-white w-16 py-1 rounded-md mx-5"
+                  @click="editPriority(item)"
+                >
+                  Edit
+                </button>
+                <button
+                  class="bg-red-400 text-white w-16 py-1 rounded-md"
+                  @click="deletePriorityF(item)"
+                >
+                  Delete
+                </button>
               </td>
               <td class="flex items-center justify-center py-2" v-else>
                 <img :src="iconBlock" alt="block icon" class="h-5 w-5" />

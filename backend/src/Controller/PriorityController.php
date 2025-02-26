@@ -83,7 +83,7 @@ final class PriorityController extends AbstractController
         }
     }
 
-    #[Route('/{priority_id<\d+>}', name : 'update_priority', methods: ['PUT'])]
+    #[Route('/{priorityId<\d+>}', name : 'update_priority', methods: ['PUT'])]
     public function updatePriority(int $priorityId, Request $request): JsonResponse
     {
         try {
@@ -108,7 +108,7 @@ final class PriorityController extends AbstractController
         }
     }
 
-    #[Route('/{priority_id<\d+>}', name : 'delete_priority', methods: ['DELETE'])]
+    #[Route('/{priorityId<\d+>}', name : 'delete_priority', methods: ['DELETE'])]
     public function deletePriority(int $priorityId): JsonResponse
     {
         try {
@@ -116,9 +116,16 @@ final class PriorityController extends AbstractController
             if (!$priority) {
                 return $this->responseService->notfoundResponse(message: 'Priority not found');
             }
-            $priority = $this->priorityService->deleteCustomPriority($priority);
+            $result = $this->priorityService->deleteCustomPriority($priority);
+            if (isset($result['error'])) {
+                return $this->responseService->errorResponse(
+                    message: $result['error'],
+                    statusCode: Response::HTTP_BAD_REQUEST
+                );
+            }
 
-            return $this->responseService->successResponse(message: 'successfully get  priority', data: $priority);
+
+            return $this->responseService->successResponse(message: 'successfully get  priority', data: $result['success']);
         } catch (\Exception $e) {
             return $this->responseService->errorResponse(
                 message : $e->getMessage(),

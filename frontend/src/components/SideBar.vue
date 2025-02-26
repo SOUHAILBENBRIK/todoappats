@@ -7,20 +7,50 @@ import helpIcon from '../assets/icons/help.svg'
 import categoryIcon from '../assets/icons/category.svg'
 import setingIcon from '../assets/icons/settings.svg'
 import userIcon from '../assets/icons/user.svg'
+import { onMounted, ref } from 'vue'
+import { getUser } from '@/api/userApi'
 const router = useRouter()
+const userName = ref('')
+const email = ref('')
+const profile = ref(null)
+
 function logout() {
   localStorage.removeItem('token')
   router.push('/login')
 }
+function getUserInfo() {
+  getUser()
+    .then((response) => {
+      if (response.status === 200) {
+        const user = JSON.parse(response.data.data)
+        console.log('user', user)
+        userName.value = user.name
+        email.value = user.email
+        profile.value = user.profileImage
+      } else {
+        console.log('response', response)
+      }
+    })
+    .catch((err) => {
+      console.log('error', err)
+    })
+}
+onMounted(() => {
+  getUserInfo()
+})
 </script>
 
 <template>
   <div class="bg-amber-400 h-[93vh] flex flex-col justify-between items-start gap-5 w-[12vw] p-4">
     <!-- Profile -->
-    <div class="flex flex-col items-center gap-2">
-      <img :src="userIcon" alt="Profile" class="bg-white rounded-full h-20 w-20" />
-      <p class="text-black text-sm font-semibold">Souhail Ben Brik</p>
-      <p class="text-black text-xs">benbriksouhail43@gmail.com</p>
+    <div class="flex flex-col items-center gap-2 w-full">
+      <img
+        :src="profile ? `http://localhost:8000${profile}` : userIcon"
+        alt="Profile"
+        class="bg-white rounded-full h-20 w-20"
+      />
+      <p class="text-black text-sm font-semibold overflow-ellipsis">{{ userName }}</p>
+      <p class="text-black text-sm font-semibold overflow-ellipsis">{{ email }}</p>
     </div>
 
     <!-- Sidebar Navigation -->

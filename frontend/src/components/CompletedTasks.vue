@@ -2,51 +2,31 @@
 import type { Task } from '@/entity/tasks'
 import completedIcon from '../assets/icons/Book.svg'
 import TaskItem from './TaskItem.vue'
+import { onMounted, ref } from 'vue'
+import { getCompletedTasks } from '@/api/taksApi'
 const date = new Date().toDateString().split(' ').slice(1).join(' ')
-const tasks: Task[] = [
-  {
-    title: 'Task 1',
-    description:
-      'This is the first task gfgfg fgkf lmdgml fdglfdg gfdgfdgk fdmlgkfdml gkd fmlgkd flmgkfdlmg kfd lmk gfdmlgk fdlgkfmldgk fdmlgk fdlmgk',
-    createdAt: '2021-10-10T10:10:10.000Z',
-    status: 1,
-    priority: 1,
-    picture:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFUAfyVe3Easiycyh3isP9wDQTYuSmGPsPQvLIJdEYvQ_DsFq5Ez2Nh_QjiS3oZ3B8ZPfK9cZQyIStmQMV1lDPLw',
-    id: 1,
-    user: 1,
-    completedAt: null,
-    deadline: null,
-  },
-  {
-    title: 'Task 1',
-    description:
-      'This is the first task gfgfg fgkf lmdgml fdglfdg gfdgfdgk fdmlgkfdml gkd fmlgkd flmgkfdlmg kfd lmk gfdmlgk fdlgkfmldgk fdmlgk fdlmgk',
-    createdAt: '2021-10-10T10:10:10.000Z',
-    status: 1,
-    priority: 1,
-    picture:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFUAfyVe3Easiycyh3isP9wDQTYuSmGPsPQvLIJdEYvQ_DsFq5Ez2Nh_QjiS3oZ3B8ZPfK9cZQyIStmQMV1lDPLw',
-    id: 2,
-    user: 1,
-    completedAt: null,
-    deadline: null,
-  },
-  {
-    title: 'Task 1',
-    description:
-      'This is the first task gfgfg fgkf lmdgml fdglfdg gfdgfdgk fdmlgkfdml gkd fmlgkd flmgkfdlmg kfd lmk gfdmlgk fdlgkfmldgk fdmlgk fdlmgk',
-    createdAt: '2021-10-10T10:10:10.000Z',
-    status: 1,
-    priority: 1,
-    picture:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFUAfyVe3Easiycyh3isP9wDQTYuSmGPsPQvLIJdEYvQ_DsFq5Ez2Nh_QjiS3oZ3B8ZPfK9cZQyIStmQMV1lDPLw',
-    id: 3,
-    user: 1,
-    completedAt: null,
-    deadline: null,
-  },
-]
+const tasks = ref<Task[]>([])
+
+function getAllTasks() {
+  getCompletedTasks()
+    .then((response) => {
+      console.log(response)
+      if (response.status === 200) {
+        console.log(response.data.data)
+        tasks.value = JSON.parse(response.data.data)
+        console.log(tasks)
+      } else {
+        console.log('response', response)
+      }
+    })
+    .catch((err) => {
+      console.log('error', err)
+    })
+}
+
+onMounted(() => {
+  getAllTasks()
+})
 </script>
 
 <template>
@@ -58,8 +38,8 @@ const tasks: Task[] = [
       <p class="text-black">Completed Task</p>
     </div>
     <div class="flex flex-col gap-2.5 p-5 w-full h-5/6 overflow-y-auto">
-      <div v-if="tasks.length === 0">
-        <p>No tasks available</p>
+      <div v-if="tasks.length === 0" class="text-center">
+        <p class="text-black text-2xl">No completed tasks</p>
       </div>
       <TaskItem
         v-for="task in tasks"

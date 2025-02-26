@@ -3,7 +3,7 @@ import userIcon from '@/assets/icons/user.svg'
 import emailIcon from '@/assets/icons/email.svg'
 import passwordIcon from '@/assets/icons/password.svg'
 import InputComponent from '@/components/InputComponent.vue'
-import { reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 const email = ref('')
 const password = ref('')
@@ -11,7 +11,8 @@ const userName = ref('')
 const name = ref('')
 const lastName = ref('')
 const age = ref('')
-
+const profile = ref(null)
+import { getUser } from '@/api/userApi'
 const errors = reactive<Record<string, string>>({})
 
 const router = useRouter()
@@ -34,6 +35,30 @@ watch(name, (newName) => {
 watch(lastName, (newLastName) => {
   errors.lastName = newLastName.length < 4 ? 'Last name must be at least 4 characters long' : ''
 })
+
+function getUserInfo() {
+  getUser()
+    .then((response) => {
+      if (response.status === 200) {
+        const user = JSON.parse(response.data.data)
+        console.log('user', user)
+        name.value = user.name
+        lastName.value = user.lastName
+        userName.value = user.username
+        email.value = user.email
+        age.value = user.age
+        profile.value = user.profileImage
+      } else {
+        console.log('response', response)
+      }
+    })
+    .catch((err) => {
+      console.log('error', err)
+    })
+}
+onMounted(() => {
+  getUserInfo()
+})
 </script>
 
 <template>
@@ -47,10 +72,14 @@ watch(lastName, (newLastName) => {
     <div
       class="w-full flex flex-row items-center justify-start gap-5 py-3 px-5 bg-amber-300 rounded-3xl"
     >
-      <img :src="userIcon" alt="user icon" class="w-20 h-20 bg-gray-200 rounded-full p-2" />
+      <img
+        :src="profile ? `http://localhost:8000${profile}` : userIcon"
+        alt="user icon"
+        class="w-20 h-20 bg-gray-200 rounded-full p-2"
+      />
       <div class="flex flex-col gap-2">
-        <p class="text-2xl text-black font-bold">Souhail ben brik</p>
-        <p class="text-l text-gray-800">benbriksouhail43@gmail.com</p>
+        <p class="text-2xl text-black font-bold">{{ name + ' ' + lastName }}</p>
+        <p class="text-l text-gray-800">{{ email }}</p>
       </div>
     </div>
     <div class="w-full flex flex-col items-start justify-start gap-5 py-5">

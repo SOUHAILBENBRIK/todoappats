@@ -15,6 +15,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      redirect: '/dashboard',
       children: [
         { path: '/profile', component: AccountInformation },
         { path: '/dashboard', component: MainHome },
@@ -22,11 +23,6 @@ const router = createRouter({
         {
           path: '/tasks',
           component: Tasks,
-        },
-        {
-          path: '/:pathMatch(.*)*',
-          name: 'not-found',
-          component: NotFound,
         },
       ],
       meta: {

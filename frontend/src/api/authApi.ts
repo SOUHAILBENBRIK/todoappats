@@ -1,4 +1,4 @@
-import { publicAxiosInstance } from '@/api/axiosInstance.ts'
+import { privateAxiosInstance, publicAxiosInstance } from '@/api/axiosInstance.ts'
 import type { AxiosResponse } from 'axios'
 
 export interface UserRegistration {
@@ -15,11 +15,10 @@ export interface UserLogin {
 }
 
 export const registerUser = async (userData: UserRegistration): Promise<AxiosResponse> => {
-  const response = await publicAxiosInstance.post('/register', userData)
-  return response
+  return await publicAxiosInstance.post('/register', userData)
 }
 
 export const loginUser = async (userData: UserLogin): Promise<AxiosResponse> => {
-  const response = await publicAxiosInstance.post('/login', userData)
-  return response
+  return await publicAxiosInstance.post('/login', userData)
 }
+

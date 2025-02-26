@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Serializer;
 
 #[Route('/status')]
 final class StatusController extends AbstractController
@@ -46,12 +47,16 @@ final class StatusController extends AbstractController
     }
 
     #[Route('/{status_id<\d+>}', name : 'get_status', methods: ['GET'])]
-    public function getStatus(int $statusId): JsonResponse
+    public function getStatus(int $statusId, Serializer $serializer): JsonResponse
     {
         try {
             $status = $this->statusService->getStatus($statusId);
-
-            return $this->responseService->successResponse(message: 'successfully get  status', data: $status);
+            if(!$status){
+                return $this->responseService->notFoundResponse(
+                    message: 'status not found',
+                );
+            }
+            return $this->responseService->successResponse(message: 'successfully get  status', data: $serializer->serialize($status, 'json', ['groups' => ['status:read']]));
         } catch (\Exception $e) {
             return $this->responseService->errorResponse(
                 message : $e->getMessage(),
@@ -84,7 +89,7 @@ final class StatusController extends AbstractController
         }
     }
 
-    #[Route('/{status_id<\d+>}', name : 'update_status', methods: ['PUT'])]
+    #[Route('/{statusId<\d+>}', name : 'update_status', methods: ['PUT'])]
     public function updateStatus(int $statusId, Request $request): JsonResponse
     {
         try {
@@ -105,13 +110,23 @@ final class StatusController extends AbstractController
         }
     }
 
-    #[Route('/{status_id<\d+>}', name : 'delete_status', methods: ['DELETE'])]
+    #[Route('/{statusId<\d+>}', name : 'delete_status', methods: ['DELETE'])]
     public function deleteStatus(int $statusId): JsonResponse
     {
         try {
             $status = $this->statusService->getStatus($statusId);
+            if (!$status) {
+                return $this->responseService->notfoundResponse(message: 'Status not found');
+            }
+            $result = $this->statusService->deleteCustomStatus($status);
+            if (isset($result['error'])) {
+                return $this->responseService->errorResponse(
+                    message: $result['error'],
+                    statusCode: Response::HTTP_BAD_REQUEST
+                );
+            }
 
-            return $this->responseService->successResponse(message: 'successfully get  status', data: $status);
+            return $this->responseService->successResponse(message: 'successfully get  status', data: $result['success']);
         } catch (\Exception $e) {
             return $this->responseService->errorResponse(
                 message : $e->getMessage(),

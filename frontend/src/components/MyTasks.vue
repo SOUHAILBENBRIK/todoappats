@@ -1,100 +1,35 @@
 <script setup lang="ts">
 import { type Task } from '@/entity/tasks'
 import userIcons from '../assets/icons/user.svg'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import TaskItem from './TaskItem.vue'
-const tasks: Task[] = [
-  {
-    title: 'Task 1',
-    description:
-      'This is the first task gfgfg fgkf lmdgml fdglfdg gfdgfdgk fdmlgkfdml gkd fmlgkd flmgkfdlmg kfd lmk gfdmlgk fdlgkfmldgk fdmlgk fdlmgk',
-    createdAt: '2021-10-10T10:10:10.000Z',
-    status: 1,
-    priority: 1,
-    picture:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFUAfyVe3Easiycyh3isP9wDQTYuSmGPsPQvLIJdEYvQ_DsFq5Ez2Nh_QjiS3oZ3B8ZPfK9cZQyIStmQMV1lDPLw',
-    id: 1,
-    user: 1,
-    completedAt: null,
-    deadline: null,
-  },
-  {
-    title: 'Task 2',
-    description:
-      'This is the first task gfgfg fgkf lmdgml fdglfdg gfdgfdgk fdmlgkfdml gkd fmlgkd flmgkfdlmg kfd lmk gfdmlgk fdlgkfmldgk fdmlgk fdlmgk',
-    createdAt: '2021-10-10T10:10:10.000Z',
-    status: 1,
-    priority: 1,
-    picture:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFUAfyVe3Easiycyh3isP9wDQTYuSmGPsPQvLIJdEYvQ_DsFq5Ez2Nh_QjiS3oZ3B8ZPfK9cZQyIStmQMV1lDPLw',
-    id: 2,
-    user: 1,
-    completedAt: null,
-    deadline: null,
-  },
-  {
-    title: 'Task 3',
-    description:
-      'This is the first task gfgfg fgkf lmdgml fdglfdg gfdgfdgk fdmlgkfdml gkd fmlgkd flmgkfdlmg kfd lmk gfdmlgk fdlgkfmldgk fdmlgk fdlmgk',
-    createdAt: '2021-10-10T10:10:10.000Z',
-    status: 1,
-    priority: 1,
-    picture:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFUAfyVe3Easiycyh3isP9wDQTYuSmGPsPQvLIJdEYvQ_DsFq5Ez2Nh_QjiS3oZ3B8ZPfK9cZQyIStmQMV1lDPLw',
-    id: 3,
-    user: 1,
-    completedAt: null,
-    deadline: null,
-  },
-  {
-    title: 'Task 4',
-    description:
-      'This is the first task gfgfg fgkf lmdgml fdglfdg gfdgfdgk fdmlgkfdml gkd fmlgkd flmgkfdlmg kfd lmk gfdmlgk fdlgkfmldgk fdmlgk fdlmgk',
-    createdAt: '2021-10-10T10:10:10.000Z',
-    status: 1,
-    priority: 1,
-    picture:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFUAfyVe3Easiycyh3isP9wDQTYuSmGPsPQvLIJdEYvQ_DsFq5Ez2Nh_QjiS3oZ3B8ZPfK9cZQyIStmQMV1lDPLw',
-    id: 4,
-    user: 1,
-    completedAt: null,
-    deadline: null,
-  },
-  {
-    title: 'Task 5',
-    description:
-      'This is the first task gfgfg fgkf lmdgml fdglfdg gfdgfdgk fdmlgkfdml gkd fmlgkd flmgkfdlmg kfd lmk gfdmlgk fdlgkfmldgk fdmlgk fdlmgk',
-    createdAt: '2021-10-10T10:10:10.000Z',
-    status: 1,
-    priority: 1,
-    picture:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFUAfyVe3Easiycyh3isP9wDQTYuSmGPsPQvLIJdEYvQ_DsFq5Ez2Nh_QjiS3oZ3B8ZPfK9cZQyIStmQMV1lDPLw',
-    id: 5,
-    user: 1,
-    completedAt: null,
-    deadline: null,
-  },
-  {
-    title: 'Task 6',
-    description:
-      'This is the first task gfgfg fgkf lmdgml fdglfdg gfdgfdgk fdmlgkfdml gkd fmlgkd flmgkfdlmg kfd lmk gfdmlgk fdlgkfmldgk fdmlgk fdlmgk',
-    createdAt: '2021-10-10T10:10:10.000Z',
-    status: 1,
-    priority: 1,
-    picture:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFUAfyVe3Easiycyh3isP9wDQTYuSmGPsPQvLIJdEYvQ_DsFq5Ez2Nh_QjiS3oZ3B8ZPfK9cZQyIStmQMV1lDPLw',
-    id: 6,
-    user: 1,
-    completedAt: null,
-    deadline: null,
-  },
-]
-const task = ref(tasks[0])
-
+import { getTasks } from '@/api/taksApi'
+const tasks = ref<Task[]>([])
+const task = ref<Task | null>(null)
+function getAllTasks() {
+  getTasks()
+    .then((response) => {
+      console.log(response)
+      if (response.status === 200) {
+        console.log(response.data.data)
+        tasks.value = JSON.parse(response.data.data)
+        console.log(tasks)
+      } else {
+        console.log('response', response)
+      }
+    })
+    .catch((err) => {
+      console.log('error', err)
+    })
+}
 function changeTask(val: Task) {
   task.value = val
   console.log(task.value)
 }
+
+onMounted(() => {
+  getAllTasks()
+})
 </script>
 
 <template>
@@ -116,10 +51,13 @@ function changeTask(val: Task) {
     </div>
 
     <!-- Second Div -->
-    <div class="flex-1 h-[85vh] border border-black rounded-2xl p-4">
+    <div v-if="task == null" class="flex-1 h-[85vh] border border-black rounded-2xl p-4">
+      <p class="text-black text-2xl">NO Task Selected</p>
+    </div>
+    <div class="flex-1 h-[85vh] border border-black rounded-2xl p-4" v-else>
       <div class="flex flex-row gap-5 items-center justify-start">
         <img
-          :src="task.picture != null ? task.picture : userIcons"
+          :src="task.picture ? `http://localhost:8000${task.picture}` : userIcons"
           alt="picture"
           class="w-30 h-30 rounded-2xl"
         />

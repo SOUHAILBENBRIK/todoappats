@@ -17,6 +17,9 @@ export const getStatusById = async (id: number): Promise<AxiosResponse> => {
   return await privateAxiosInstance.get(`/status/${id}`)
 }
 
-export const updateStatus = async (id: number, status: Status): Promise<AxiosResponse> => {
+export const updateStatus = async (id: number, status: StatusCreation): Promise<AxiosResponse> => {
   return await privateAxiosInstance.put(`/status/${id}`, status)
+}
+export const deleteStatus = async (id: number): Promise<AxiosResponse> => {
+  return await privateAxiosInstance.delete(`/status/${id}`)
 }

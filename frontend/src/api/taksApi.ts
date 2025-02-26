@@ -18,9 +18,16 @@ export const createTask = async (task: TaskCreation): Promise<AxiosResponse> => 
 export const getTasks = async (): Promise<AxiosResponse> => {
   return await privateAxiosInstance.get('/tasks')
 }
+export const getCompletedTasks = async (): Promise<AxiosResponse> => {
+  return await privateAxiosInstance.get('/tasks/completed')
+}
+export const getMissedTasks = async (): Promise<AxiosResponse> => {
+  return await privateAxiosInstance.get('/tasks/missed')
+}
 export const getTask = async (id: number): Promise<AxiosResponse> => {
   return await privateAxiosInstance.get(`/tasks/${id}`)
 }
+
 export const updateTask = async (id: number, task: TaskCreation): Promise<AxiosResponse> => {
   return await privateAxiosInstance.put(`/tasks/${id}`, task)
 }
