@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\StatusRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StatusRepository::class)]
 class Status
@@ -11,13 +12,16 @@ class Status
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('status:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('status:read')]
     private ?string $name = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'customStatuses')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[Groups('status:read')]
     private ?User $user = null;
 
     public function getId(): ?int

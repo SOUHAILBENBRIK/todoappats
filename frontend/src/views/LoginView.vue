@@ -63,7 +63,10 @@ function login() {
     statusCode="401"
     path="/login"
   />
-  <main v-else-if="!loading" class="h-screen flex items-center justify-center bg-gray-100">
+  <!-- Loading Component -->
+  <loading v-else-if="loading" />
+  <!-- Main Section -->
+  <main v-else class="h-screen flex items-center justify-center bg-gray-100">
     <div class="flex flex-row items-center justify-center gap-10 p-8 bg-white shadow-md rounded-lg">
       <!-- Form Section -->
       <div class="flex flex-col gap-5 w-96">
@@ -109,7 +112,4 @@ function login() {
       </div>
     </div>
   </main>
-
-  <!-- Loading Component -->
-  <loading v-else message="waiting please" />
 </template>

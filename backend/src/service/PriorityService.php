@@ -22,9 +22,9 @@ class PriorityService
 
     public function getPriorities(int $userId): string
     {
-        $priorities = $this->priorityRepository->findBy(['user' => $userId]);
+        $priorities = $this->priorityRepository->findBy(['user' => [$userId, null]]);
 
-        return $this->serializer->serialize($priorities, 'json', ['groups' => ['priority:read'], 'ignored_attributes' => ['user']]);
+        return $this->serializer->serialize($priorities, 'json', ['groups' => ['priority:read']]);
     }
 
     public function getPriority(int $priorityId): ?Priority
@@ -32,14 +32,11 @@ class PriorityService
         return $this->priorityRepository->find($priorityId);
     }
 
-    public function createCustomPriority(Request $request): array
+    public function createCustomPriority(Request $request, User $user): array
     {
         $jsonContent = $request->getContent();
         $data = json_decode($jsonContent, true);
-        $user = $this->entityManager->getRepository(User::class)->find($data['user']);
-        if (!$user) {
-            return ['error' => 'User not found'];
-        }
+
         $existingPriority = $this->entityManager->getRepository(Priority::class)->findOneBy(['name' => $data['name']]);
         if ($existingPriority) {
             return ['error' => 'Priority already exists'];

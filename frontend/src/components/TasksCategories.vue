@@ -4,49 +4,70 @@ import iconBlock from '@/assets/icons/block.svg'
 import type { Priority } from '@/entity/priority'
 import { type Status } from '@/entity/status'
 import { useRouter } from 'vue-router'
+import { onMounted, ref, provide, watch } from 'vue'
+import { getStatus } from '@/api/statusApi'
+import { getPriority } from '@/api/priorityApi'
+import AddPriority from './AddPriority.vue'
+import AddStatus from './AddStatus.vue'
 const router = useRouter()
-const status: Array<Status> = [
-  {
-    id: 1,
-    name: 'Pending',
-    user: null,
-  },
-  {
-    id: 2,
-    name: 'Not Started',
-    user: null,
-  },
-  {
-    id: 3,
-    name: 'In Progress',
-    user: null,
-  },
-]
-const priority: Array<Priority> = [
-  {
-    id: 1,
-    name: 'Low',
-    user: null,
-    level: 1,
-  },
-  {
-    id: 2,
-    name: 'Medium',
-    user: null,
-    level: 2,
-  },
-  {
-    id: 3,
-    name: 'High',
-    user: null,
-    level: 3,
-  },
-]
+const status = ref<Status[]>([])
+const priority = ref<Priority[]>([])
+const isNewPriority = ref(false)
+const isNewStatus = ref(false)
+provide('isNewStatus', isNewStatus)
+provide('isNewPriority', isNewPriority)
+
+function getAllStatus() {
+  getStatus()
+    .then((response) => {
+      console.log(response.data.data)
+      status.value = JSON.parse(response.data.data)
+      console.log(status.value)
+    })
+    .catch((err) => {
+      console.log('error', err)
+    })
+}
+function getAllPriority() {
+  getPriority()
+    .then((response) => {
+      console.log(response.data.data)
+      priority.value = JSON.parse(response.data.data)
+      console.log(priority.value)
+    })
+    .catch((err) => {
+      console.log('error', err)
+    })
+}
+function addPriority() {
+  isNewPriority.value = true
+}
+function addStatus() {
+  isNewStatus.value = true
+}
+watch(isNewPriority, (newIsNewPriority) => {
+  if (!newIsNewPriority) {
+    getAllPriority()
+  }
+})
+watch(isNewStatus, (newIsNewStatus) => {
+  if (!newIsNewStatus) {
+    getAllStatus()
+  }
+})
+
+onMounted(() => {
+  getAllPriority()
+  getAllStatus()
+})
 </script>
 
 <template>
+  <AddPriority v-if="isNewPriority" />
+  <AddStatus v-else-if="isNewStatus" />
   <div
     class="w-[87vw] h-[90vh] flex flex-col items-start justify-start border border-black rounded-2xl px-10"
+    v-else
   >
     <div class="w-full flex flex-row items-center justify-between pt-4 pb-8">
       <p class="text-amber-400 text-2xl">Task Categories</p>
@@ -55,9 +76,12 @@ const priority: Array<Priority> = [
     <div class="w-full py-10">
       <div class="w-full flex flex-row items-center justify-between">
         <p class="text-black">Task Status</p>
-        <div class="flex flex-row items-center justify-between gap-5">
+        <div
+          class="flex flex-row items-center justify-between gap-5 cursor-pointer"
+          @click="addStatus"
+        >
           <img :src="iconAdd" alt="icon add" class="h-5 w-5" />
-          <p class="text-black">Add Task</p>
+          <p class="text-black">Add Status</p>
         </div>
       </div>
       <div class="overflow-x-auto py-2">
@@ -92,9 +116,12 @@ const priority: Array<Priority> = [
     <div class="w-full py-10">
       <div class="w-full flex flex-row items-center justify-between">
         <p class="text-black">Task Priority</p>
-        <div class="flex flex-row items-center justify-between gap-5">
+        <div
+          class="flex flex-row items-center justify-between gap-5 cursor-pointer"
+          @click="addPriority"
+        >
           <img :src="iconAdd" alt="icon add" class="h-5 w-5" />
-          <p class="text-black">Add Task</p>
+          <p class="text-black">Add Priority</p>
         </div>
       </div>
       <div class="overflow-x-auto py-2">

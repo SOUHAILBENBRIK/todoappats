@@ -22,9 +22,9 @@ class StatusService
 
     public function getStatusList(int $userId): string
     {
-        $statusList = $this->statusRepository->findBy(['user' => $userId]);
+        $statusList = $this->statusRepository->findBy(['user' => [$userId, null]]);
 
-        return $this->serializer->serialize($statusList, 'json', ['groups' => ['status:read'], 'ignored_attributes' => ['user']]);
+        return $this->serializer->serialize($statusList, 'json', ['groups' => ['status:read']]);
     }
 
     public function getStatus(int $statusId): string
@@ -34,14 +34,11 @@ class StatusService
         return $this->serializer->serialize($status, 'json', ['groups' => ['status:read']]);
     }
 
-    public function createCustomStatus(Request $request): array
+    public function createCustomStatus(Request $request, User $user): array
     {
         $jsonContent = $request->getContent();
         $data = json_decode($jsonContent, true);
-        $user = $this->entityManager->getRepository(User::class)->find($data['user']);
-        if (!$user) {
-            return ['error' => 'User not found'];
-        }
+        
         $existingStatus = $this->entityManager->getRepository(Status::class)->findOneBy(['name' => $data['name']]);
         if ($existingStatus) {
             return ['error' => 'Status already exists'];

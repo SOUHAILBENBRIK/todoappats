@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\service\ResponseService;
 use App\service\StatusService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Route('/status')]
 final class StatusController extends AbstractController
 {
     private StatusService $statusService;
@@ -23,11 +25,17 @@ final class StatusController extends AbstractController
         $this->responseService = $responseService;
     }
 
-    #[Route('/user/{user_id<\d+>}', name : 'get_all_status', methods: ['GET'])]
-    public function getAllStatus(int $userId): JsonResponse
+    #[Route('', name : 'get_all_status', methods: ['GET'])]
+    public function getAllStatus(): JsonResponse
     {
         try {
-            $statusList = $this->statusService->getStatusList($userId);
+            $user = $this->getUser();
+            if (!$user instanceof User) {
+                return $this->responseService->notfoundResponse(
+                    'User not found',
+                );
+            }
+            $statusList = $this->statusService->getStatusList($user->getId());
 
             return $this->responseService->successResponse(message: 'successfully get All status', data: $statusList);
         } catch (\Exception $e) {
@@ -51,11 +59,17 @@ final class StatusController extends AbstractController
         }
     }
 
-    #[Route('/', name : 'create_status', methods: ['POST'])]
+    #[Route('', name : 'create_status', methods: ['POST'])]
     public function createStatus(Request $request): JsonResponse
     {
         try {
-            $response = $this->statusService->createCustomStatus($request);
+            $user = $this->getUser();
+            if (!$user instanceof User) {
+                return $this->responseService->notfoundResponse(
+                    'User not found',
+                );
+            }
+            $response = $this->statusService->createCustomStatus($request, $user);
             if (isset($result['error'])) {
                 return $this->responseService->errorResponse(
                     message: $result['error'],
@@ -74,9 +88,6 @@ final class StatusController extends AbstractController
     public function updateStatus(int $statusId, Request $request): JsonResponse
     {
         try {
-
-
-
             $result = $this->statusService->updateCustomStatus($statusId, $request->getContent());
 
             if (isset($result['error'])) {

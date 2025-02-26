@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\service\PriorityService;
 use App\service\ResponseService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,11 +26,17 @@ final class PriorityController extends AbstractController
         $this->responseService = $responseService;
     }
 
-    #[Route('/user/{user_id<\d+>}', name : 'get_all_priority', methods: ['GET'])]
-    public function getAllPriority(int $userId): JsonResponse
+    #[Route('', name : 'get_all_priority', methods: ['GET'])]
+    public function getAllPriority(): JsonResponse
     {
         try {
-            $priorities = $this->priorityService->getPriorities($userId);
+            $user = $this->getUser();
+            if (!$user instanceof User) {
+                return $this->responseService->notfoundResponse(
+                    'User not found',
+                );
+            }
+            $priorities = $this->priorityService->getPriorities($user->getId());
 
             return $this->responseService->successResponse(message: 'successfully get All Priorities', data: $priorities);
         } catch (\Exception $e) {
@@ -53,11 +60,15 @@ final class PriorityController extends AbstractController
         }
     }
 
-    #[Route('/', name : 'create_priority', methods: ['POST'])]
+    #[Route('', name : 'create_priority', methods: ['POST'])]
     public function createPriority(Request $request): JsonResponse
     {
         try {
-            $response = $this->priorityService->createCustomPriority($request);
+            $user = $this->getUser();
+            if (!$user instanceof User) {
+                return $this->responseService->notfoundResponse('User not found');
+            }
+            $response = $this->priorityService->createCustomPriority($request, $user);
             if (isset($result['error'])) {
                 return $this->responseService->errorResponse(
                     message: $result['error'],

@@ -24,7 +24,7 @@ final class UserController extends AbstractController
         $this->userService = $userService;
     }
 
-    #[Route('/', name: 'get_all_user', methods: ['GET']),IsGranted('ROLE_ADMIN')]
+    #[Route('', name: 'get_all_user', methods: ['GET']),IsGranted('ROLE_ADMIN')]
     public function getAllUser(): JsonResponse
     {
         try {
@@ -39,7 +39,7 @@ final class UserController extends AbstractController
         }
     }
 
-    #[Route('/', name : 'update_user', methods: ['Put'])]
+    #[Route('', name : 'update_user', methods: ['Put'])]
     public function updateUser(
         Request $request): JsonResponse
     {

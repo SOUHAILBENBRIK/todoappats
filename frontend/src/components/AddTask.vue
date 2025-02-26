@@ -15,6 +15,9 @@ const photo = ref(null);
 <template>
     <div class="w-full h-full flex flex-col justify-start items-center gap-5">
         <InputComponent placeHolder="Enter task title" :iconPath="tasksIcon" v-model="title" />
+        <InputComponent placeHolder="Enter task title" :iconPath="tasksIcon" v-model="title" />
+        <InputComponent placeHolder="Enter task title" :iconPath="tasksIcon" v-model="title" />
+        <InputComponent placeHolder="Enter task title" :iconPath="tasksIcon" v-model="title" />
         
     </div>
 

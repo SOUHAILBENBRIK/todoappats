@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PriorityRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PriorityRepository::class)]
@@ -12,20 +13,23 @@ class Priority
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('priority:read')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\NotBlank]
+    #[Groups('priority:read')]
     private ?string $name = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
     #[Assert\Positive]
-
+    #[Groups('priority:read')]
     private ?int $level = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'customPriorities')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    #[Groups('priority:read')]
     private ?User $user = null;
 
 

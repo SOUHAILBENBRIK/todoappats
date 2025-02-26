@@ -24,7 +24,7 @@ final class TaskController extends AbstractController
         $this->responseService = $responseService;
     }
 
-    #[Route('/user', name: 'get_all-tasks', methods: ['GET'])]
+    #[Route('', name: 'get_all-tasks', methods: ['GET'])]
     public function getAllTasks(
     ): JsonResponse {
         try {
@@ -42,7 +42,7 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route('/completed/user}', name: 'get_completed_tasks', methods: ['GET'])]
+    #[Route('/completed', name: 'get_completed_tasks', methods: ['GET'])]
     public function getCompletedTasks(): JsonResponse
     {
         try {
@@ -60,7 +60,7 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route('/missed/user', name : 'get_missed_tasks', methods: ['GET'])]
+    #[Route('/missed', name : 'get_missed_tasks', methods: ['GET'])]
     public function getMissedTasks(): JsonResponse
     {
         try {
@@ -77,7 +77,7 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route('/', name: 'create_task', methods: ['Post'])]
+    #[Route('', name: 'create_task', methods: ['Post'])]
     public function addTask(Request $request): JsonResponse
     {
         try {
