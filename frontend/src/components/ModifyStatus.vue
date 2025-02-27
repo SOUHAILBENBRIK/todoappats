@@ -55,7 +55,7 @@ function updateStatusF() {
     <div class="w-2/3 p-5 bg-amber-400 rounded-2xl flex flex-col items-center justify-center gap-7">
       <p class="text-white text-2xl">Add Status</p>
       <div class="flex flex-col items-start justify-start gap-5 w-full">
-        <InputComponent placeHolder="Enter status name" :iconPath="taskIcon" v-model="title" />
+        <InputComponent placeHolder="Enter status name" iconPath="fa-tasks" v-model="title" />
         <p class="text-red-500 text-sm text-start" v-if="errors.title">{{ errors.title }}</p>
       </div>
 

@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import emailIcon from '@/assets/icons/email.svg'
-import passwordIcon from '@/assets/icons/password.svg'
-import outlinepasswordIcon from '@/assets/icons/password-outline.svg'
-import userIcon from '@/assets/icons/user.svg'
 import picture from '@/assets/images/register.svg'
 import { ref, reactive, watch } from 'vue'
 import { type UserRegistration, registerUser } from '@/api/authApi'
@@ -90,33 +86,33 @@ function register() {
       </div>
       <div class="flex flex-col gap-4 w-full md:w-1/2 p-6 bg-white shadow-lg rounded-lg">
         <h1 class="text-3xl font-bold text-gray-900">Sign Up</h1>
-        <InputComponent placeHolder="Enter your name" :iconPath="userIcon" v-model="name" />
+        <InputComponent placeHolder="Enter your name" iconPath="fa-user-alt" v-model="name" />
         <p class="text-red-500 text-sm" v-if="errors.name">{{ errors.name }}</p>
         <InputComponent
           placeHolder="Enter your last name"
-          :iconPath="userIcon"
+          iconPath="fa-user-alt"
           v-model="lastName"
         />
         <p class="text-red-500 text-sm" v-if="errors.lastName">{{ errors.lastName }}</p>
         <InputComponent
           placeHolder="Enter your user name"
-          :iconPath="userIcon"
+          iconPath="fa-user-alt"
           v-model="userName"
         />
         <p class="text-red-500 text-sm" v-if="errors.userName">{{ errors.userName }}</p>
-        <InputComponent placeHolder="Enter your email" :iconPath="emailIcon" v-model="email" />
+        <InputComponent placeHolder="Enter your email" iconPath="md-email-round" v-model="email" />
         <p class="text-red-500 text-sm" v-if="errors.email">{{ errors.email }}</p>
-        <InputComponent placeHolder="Enter your age" :iconPath="userIcon" v-model="age" />
+        <InputComponent placeHolder="Enter your age" iconPath="fa-user-alt" v-model="age" />
         <p class="text-red-500 text-sm" v-if="errors.age">{{ errors.age }}</p>
         <InputComponent
           placeHolder="Enter your password"
-          :iconPath="passwordIcon"
+          iconPath="ri-lock-password-fill"
           v-model="password"
         />
         <p class="text-red-500 text-sm" v-if="errors.password">{{ errors.password }}</p>
         <InputComponent
           placeHolder="Renter your password"
-          :iconPath="outlinepasswordIcon"
+          iconPath="ri-lock-password-line"
           v-model="repassword"
         />
         <p class="text-red-500 text-sm" v-if="errors.repassword">{{ errors.repassword }}</p>

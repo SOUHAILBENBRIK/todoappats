@@ -16,7 +16,7 @@ class Status
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('status:read')]
+    #[Groups(['task:read', 'status:read'])]
     private ?string $name = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'customStatuses')]

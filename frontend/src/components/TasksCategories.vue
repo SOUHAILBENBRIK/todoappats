@@ -18,7 +18,7 @@ const priority = ref<Priority[]>([])
 const isNewPriority = ref(false)
 const isNewStatus = ref(false)
 const isEditPriority = ref(false)
-const loading = ref(false)
+const loading = ref(true)
 const isEditStatus = ref(false)
 const currentPriority = ref<Priority | null>(null)
 const currentStatus = ref<Status | null>(null)
@@ -63,27 +63,21 @@ function deletePriorityF(priority: Priority) {
     })
 }
 
-function getAllStatus() {
-  getStatus()
-    .then((response) => {
-      console.log(response.data.data)
-      status.value = JSON.parse(response.data.data)
-      console.log(status.value)
-    })
-    .catch((err) => {
-      console.log('error', err)
-    })
+async function getAllStatus() {
+  try {
+    const response = await getStatus()
+    status.value = JSON.parse(response.data.data)
+  } catch (err) {
+    console.log('error', err)
+  }
 }
-function getAllPriority() {
-  getPriority()
-    .then((response) => {
-      console.log(response.data.data)
-      priority.value = JSON.parse(response.data.data)
-      console.log(priority.value)
-    })
-    .catch((err) => {
-      console.log('error', err)
-    })
+async function getAllPriority() {
+  try {
+    const response = await getPriority()
+    priority.value = JSON.parse(response.data.data)
+  } catch (err) {
+    console.log('error', err)
+  }
 }
 function addPriority() {
   isNewPriority.value = true
@@ -120,9 +114,10 @@ watch(isEditStatus, (newIsEditStatus) => {
   }
 })
 
-onMounted(() => {
-  getAllPriority()
-  getAllStatus()
+onMounted(async () => {
+  await getAllPriority()
+  await getAllStatus()
+  loading.value = false
 })
 </script>
 

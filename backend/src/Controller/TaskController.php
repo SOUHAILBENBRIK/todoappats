@@ -81,7 +81,13 @@ final class TaskController extends AbstractController
     public function addTask(Request $request): JsonResponse
     {
         try {
-            $result = $this->taskService->createTask($request);
+            $user = $this->getUser();
+            if(!$user instanceof  User){
+                return $this->responseService->notfoundResponse(
+                    "User not Found"
+                );
+            }
+            $result = $this->taskService->createTask($request , $user);
             if (isset($result['error'])) {
                 return $this->responseService->errorResponse(
                     message: $result['error'],

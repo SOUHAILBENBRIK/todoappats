@@ -20,7 +20,7 @@ const chartData = ref({
 
 // Chart Options
 const chartOptions = ref({
-  responsive: true,
+  responsive: false,
   plugins: {
     title: {
       display: false,
@@ -34,15 +34,14 @@ const chartOptions = ref({
 </script>
 
 <template>
-  <div class="bg-gray-100 flex flex-col justify-start items-start gap-5 shadow-lg h-1/2 p-2.5">
-    <div class="flex flex-row gap-5 items-center">
+  <div class="bg-gray-100 flex flex-col justify-center items-center gap-5 shadow-lg h-1/2 p-2.5">
+    <div class="w-full flex flex-row gap-5 items-center justify-start">
       <img :src="completedTask" alt="icon" />
       <p class="text-black">Task Status</p>
     </div>
 
-    <div class="flex flex-col justify-center items-center h-[70%] w-full">
-      <Pie :data="chartData" :options="chartOptions" />
-    </div>
+    <Pie :data="chartData" :options="chartOptions" :width="200" :height="200" />
+
     <div class="w-full flex flex-row gap-5 items-center justify-around">
       <p class="text-base text-black">Completed <span class="text-[#36A2EB]"> 40%</span></p>
       <p class="text-base text-black">In Progress<span class="text-[#FFCE56]"> 35%</span></p>

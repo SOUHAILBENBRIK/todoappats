@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import userIcon from '@/assets/icons/user.svg'
-import emailIcon from '@/assets/icons/email.svg'
-import passwordIcon from '@/assets/icons/password.svg'
+
 import InputComponent from '@/components/InputComponent.vue'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -11,8 +10,9 @@ const userName = ref('')
 const name = ref('')
 const lastName = ref('')
 const age = ref('')
+const repassword = ref('')
 const profile = ref(null)
-import { getUser } from '@/api/userApi'
+import { getUser, updateUser } from '@/api/userApi'
 const errors = reactive<Record<string, string>>({})
 
 const router = useRouter()
@@ -35,6 +35,9 @@ watch(name, (newName) => {
 watch(lastName, (newLastName) => {
   errors.lastName = newLastName.length < 4 ? 'Last name must be at least 4 characters long' : ''
 })
+watch(repassword, (newRepassword) => {
+  errors.repassword = newRepassword !== password.value ? 'Passwords do not match' : ''
+})
 
 function getUserInfo() {
   getUser()
@@ -46,7 +49,7 @@ function getUserInfo() {
         lastName.value = user.lastName
         userName.value = user.username
         email.value = user.email
-        age.value = user.age
+        age.value = user.age.toString()
         profile.value = user.profileImage
       } else {
         console.log('response', response)
@@ -54,6 +57,37 @@ function getUserInfo() {
     })
     .catch((err) => {
       console.log('error', err)
+    })
+}
+function updateUserInfo() {
+  if (Object.values(errors).some((error) => error)) {
+    errors.email = email.value ? '' : 'Please fill all the fields'
+    errors.password = password.value ? '' : 'Please fill all the fields'
+    errors.userName = userName.value ? '' : 'Please fill all the fields'
+    errors.name = name.value ? '' : 'Please fill all the fields'
+    errors.lastName = lastName.value ? '' : 'Please fill all the fields'
+    errors.age = age.value ? '' : 'Please fill all the fields'
+    errors.repassword = repassword.value ? '' : 'Please fill all the fields'
+    return
+  }
+  const user = {
+    name: name.value,
+    lastName: lastName.value,
+    username: userName.value,
+    email: email.value,
+    age: Number(age.value),
+    password: password.value,
+  }
+  updateUser(user)
+    .then((response) => {
+      if (response.status === 200) {
+        router.push('/dashboard')
+      } else {
+        console.log('response', response)
+      }
+    })
+    .catch((err) => {
+      console.log('error', err.message)
     })
 }
 onMounted(() => {
@@ -66,11 +100,11 @@ onMounted(() => {
     class="w-[87vw] h-[90vh] flex flex-col items-start justify-start border border-black rounded-2xl px-10"
   >
     <div class="w-full flex flex-row items-center justify-between pt-4 pb-8">
-      <p class="text-amber-500 text-2xl">Account Information</p>
+      <p class="text-black text-2xl">Account Information</p>
       <p class="text-black underline cursor-pointer" @click="router.push('/dashboard')">Go Back</p>
     </div>
     <div
-      class="w-full flex flex-row items-center justify-start gap-5 py-3 px-5 bg-amber-300 rounded-3xl"
+      class="w-full flex flex-row items-center justify-start gap-5 py-3 px-5 bg-gray-700 rounded-3xl"
     >
       <img
         :src="profile ? `http://localhost:8000${profile}` : userIcon"
@@ -83,25 +117,46 @@ onMounted(() => {
       </div>
     </div>
     <div class="w-full flex flex-col items-start justify-start gap-5 py-5">
-      <InputComponent placeHolder="Enter your name" :iconPath="userIcon" v-model="name" />
+      <InputComponent placeHolder="Enter your name" iconPath="fa-user-alt" v-model="name" />
       <p class="text-red-500 text-sm" v-if="errors.name">{{ errors.name }}</p>
-      <InputComponent placeHolder="Enter your last name" :iconPath="userIcon" v-model="lastName" />
+      <InputComponent
+        placeHolder="Enter your last name"
+        iconPath="fa-user-alt"
+        v-model="lastName"
+      />
       <p class="text-red-500 text-sm" v-if="errors.lastName">{{ errors.lastName }}</p>
-      <InputComponent placeHolder="Enter your user name" :iconPath="userIcon" v-model="userName" />
+      <InputComponent
+        placeHolder="Enter your user name"
+        iconPath="fa-user-alt"
+        v-model="userName"
+      />
       <p class="text-red-500 text-sm" v-if="errors.userName">{{ errors.userName }}</p>
-      <InputComponent placeHolder="Enter your email" :iconPath="emailIcon" v-model="email" />
+      <InputComponent
+        placeHolder="Enter your email"
+        iconPath="md-email"
+        v-model="email"
+        :readonly="true"
+      />
       <p class="text-red-500 text-sm" v-if="errors.email">{{ errors.email }}</p>
-      <InputComponent placeHolder="Enter your age" :iconPath="userIcon" v-model="age" />
+      <InputComponent placeHolder="Enter your age" iconPath="fa-user-friends" v-model="age" />
       <p class="text-red-500 text-sm" v-if="errors.age">{{ errors.age }}</p>
       <InputComponent
-        placeHolder="Enter your password"
-        :iconPath="passwordIcon"
+        placeHolder="Enter your new password"
+        iconPath="ri-lock-password-fill"
         v-model="password"
       />
       <p class="text-red-500 text-sm" v-if="errors.password">{{ errors.password }}</p>
+      <InputComponent
+        placeHolder="Renter your  password"
+        iconPath="ri-lock-password-line"
+        v-model="repassword"
+      />
+      <p class="text-red-500 text-sm" v-if="errors.repassword">{{ errors.repassword }}</p>
     </div>
     <div class="w-full flex flex-row justify-center gap-5 py-6">
-      <button class="w-[65%] text-black bg-amber-400 rounded-3xl py-4">Update Info</button>
+      <button class="w-[65%] text-black bg-gray-700 rounded-3xl py-4" @click="updateUserInfo">
+        Update Info
+      </button>
     </div>
   </div>
 </template>

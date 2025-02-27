@@ -72,12 +72,12 @@ function login() {
       <div class="flex flex-col gap-5 w-96">
         <h1 class="text-3xl font-bold text-gray-900">Sign In</h1>
 
-        <InputComponent placeHolder="Enter your email" :iconPath="emailIcon" v-model="email" />
+        <InputComponent placeHolder="Enter your email" iconPath="md-email" v-model="email" />
         <p class="text-red-500 text-sm" v-if="errors.email">{{ errors.email }}</p>
 
         <InputComponent
           placeHolder="Enter your password"
-          :iconPath="passwordIcon"
+          iconPath="ri-lock-password-fill"
           v-model="password"
           :isPassword="true"
         />

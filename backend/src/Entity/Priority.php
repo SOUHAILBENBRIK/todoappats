@@ -18,7 +18,7 @@ class Priority
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\NotBlank]
-    #[Groups('priority:read')]
+    #[Groups(['task:read', 'priority:read'])]
     private ?string $name = null;
 
     #[ORM\Column]

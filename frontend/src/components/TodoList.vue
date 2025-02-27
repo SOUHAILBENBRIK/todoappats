@@ -3,8 +3,9 @@ import type { Task } from '@/entity/tasks'
 import paddingIcon from '../assets/icons/Pending.svg'
 import addIcon from '../assets/icons/add.svg'
 import TaskItem from './TaskItem.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, provide, ref } from 'vue'
 import { getTasks } from '@/api/taksApi'
+import { useTaskHandling } from '@/stores/task'
 const date = new Date().toDateString().split(' ').slice(1).join(' ')
 const tasks = ref<Task[]>([])
 
@@ -25,6 +26,7 @@ function getAllTasks() {
     })
 }
 
+
 onMounted(() => {
   getAllTasks()
 })
@@ -39,7 +41,10 @@ onMounted(() => {
         <img :src="paddingIcon" alt="padding image" />
         <p class="text-black">To-Do</p>
       </div>
-      <div class="flex flex-row gap-2.5 items-center justify-start">
+      <div
+        class="flex flex-row gap-2.5 items-center justify-start cursor-pointer"
+        @click="useTaskHandling().changeNewTask(true)"
+      >
         <img :src="addIcon" alt="add icon" />
         <p class="text-black">Add Task</p>
       </div>

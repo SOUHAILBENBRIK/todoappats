@@ -20,7 +20,7 @@ function getAllTasks() {
       }
     })
     .catch((err) => {
-      console.log('error', err)
+      console.log('error', err.message)
     })
 }
 

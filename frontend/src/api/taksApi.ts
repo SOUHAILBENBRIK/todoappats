@@ -10,10 +10,15 @@ export interface TaskCreation {
   priority: number
   status: number
   user: number | null
+  picture: string | null
 }
 
-export const createTask = async (task: TaskCreation): Promise<AxiosResponse> => {
-  return await privateAxiosInstance.post('/tasks', task)
+export const createTask = async (task: FormData): Promise<AxiosResponse> => {
+  return await privateAxiosInstance.post('/tasks', task, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
 }
 export const getTasks = async (): Promise<AxiosResponse> => {
   return await privateAxiosInstance.get('/tasks')

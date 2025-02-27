@@ -25,22 +25,29 @@ class TaskService
     public function getAllTasks(int $userId): string
     {
         $tasks = $this->taskRepository->findBy(['user' => $userId]);
-
         return $this->serializer->serialize($tasks, 'json', ['groups' => ['task:read'], 'ignored_attributes' => ['user']]);
     }
 
     public function getAllCompletedTasks(int $userId): string
     {
-        $tasks = $this->taskRepository->findBy(['user' => $userId, 'completed' => true]);
+        $qb = $this->taskRepository->createQueryBuilder('t')
+            ->where('t.user = :userId')
+            ->andWhere('t.completedAt IS NOT NULL')
+            ->setParameter('userId', $userId);
 
-        return $this->serializer->serialize($tasks, 'json', ['groups' => ['task:read'], 'ignored_attributes' => ['user']]);
+        $tasks = $qb->getQuery()->getResult();
+
+        return $this->serializer->serialize($tasks, 'json', [
+            'groups' => ['task:read'],
+            'ignored_attributes' => ['user'],
+        ]);
     }
 
     public function getAllMissedTasks(int $userId): string
     {
         $tasks = $this->taskRepository->findBy([
             'user' => $userId,
-            'completed' => false,
+            'completedAt' => null,
         ]); // return uncompleted tasks for user x
 
         $filteredTasks = array_filter($tasks, function ($task) {
@@ -55,27 +62,15 @@ class TaskService
         return $this->taskRepository->find($taskId);
     }
 
-    public function createTask(Request $request): array
+    public function createTask(Request $request, User $user): array
     {
         // Extract data directly from form fields
         $title = $request->request->get('title');
         $description = $request->request->get('description');
         $statusId = $request->request->get('status');
         $priorityId = $request->request->get('priority');
-        $createdAt = $request->request->get('created_at');
+
         $deadline = $request->request->get('deadline');
-        $userId = $request->request->get('user');
-
-
-        if (!$userId) {
-            return ['error' => 'User ID is missing'];
-        }
-
-        // Find User
-        $user = $this->manager->getRepository(User::class)->find($userId);
-        if (!$user) {
-            return ['error' => 'User not found'];
-        }
 
         // 🔹 Find Status & Priority Entities
         $status = $this->manager->getRepository(Status::class)->find($statusId);
@@ -90,7 +85,7 @@ class TaskService
 
         // Convert Date Strings to `DateTimeImmutable`
         try {
-            $createdAtDate = new \DateTimeImmutable($createdAt);
+
             $deadlineDate = new \DateTimeImmutable($deadline);
         } catch (\Exception $e) {
             return ['error' => 'Invalid date format'];
@@ -114,7 +109,7 @@ class TaskService
         $task->setDescription($description);
         $task->setStatus($status);
         $task->setPriority($priority);
-        $task->setCreatedAt($createdAtDate);
+        $task->setCreatedAt(new \DateTimeImmutable());
         $task->setDeadline($deadlineDate);
         $task->setUser($user);
         if ($imagePath) {

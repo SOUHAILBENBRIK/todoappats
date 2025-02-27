@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.7",
-    "@types/jwt-decode": "^3.1.0",
     "@vue/compiler-sfc": "^3.5.13",
     "axios": "^1.7.9",
     "chart.js": "^4.4.8",
@@ -40,9 +39,18 @@
     "eslint-plugin-vue": "^9.32.0",
     "jiti": "^2.4.2",
     "npm-run-all2": "^7.0.2",
+    "oh-vue-icons": "1.0.0-rc3",
     "prettier": "^3.5.1",
     "typescript": "~5.7.3",
     "vite-plugin-vue-devtools": "^7.7.2",
     "vue-tsc": "^2.2.2"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "vue-demi"
+    ],
+    "onlyBuiltDependencies": [
+      "vue-demi"
+    ]
   }
 }

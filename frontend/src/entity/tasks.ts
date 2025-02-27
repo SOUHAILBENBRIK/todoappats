@@ -1,3 +1,6 @@
+import type { Priority } from './priority'
+import type { Status } from './status'
+
 export interface Task {
   id: number
   title: string
@@ -5,8 +8,8 @@ export interface Task {
   createdAt: string
   completedAt: string | null
   deadline: string | null
-  priority: number
-  status: number
+  priority: Priority
+  status: Status
   picture: string | null
   user: number | null
 }

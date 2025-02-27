@@ -34,10 +34,10 @@ const props = defineProps<{
         class="task-footer flex flex-row gap-2 items-center justify-between p-2 w-full rounded-lg text-black"
       >
         <p>
-          Priority : <span class="text-blue-500 font-bold">{{ task.priority }}</span>
+          Priority : <span class="text-blue-500 font-bold">{{ task.priority.name }}</span>
         </p>
         <p>
-          Status : <span class="text-red-500 font-bold">{{ task.status }}</span>
+          Status : <span class="text-red-500 font-bold">{{ task.status.name }}</span>
         </p>
         <p>
           createdAt : <span class="font-bold">{{ task.createdAt.split('T')[0] }}</span>

@@ -48,13 +48,15 @@ class Task
 
     #[ORM\ManyToOne(targetEntity: Priority::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('task:read')]
     private ?Priority $priority = null;
 
     #[ORM\ManyToOne(targetEntity: Status::class)]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('task:read')]
     private ?Status $status = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true, )]
     #[Groups('task:read')]
     private ?string $picture = null;
 
@@ -71,6 +73,7 @@ class Task
     public function setTitle(string $title): static
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -82,6 +85,7 @@ class Task
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -93,6 +97,7 @@ class Task
     public function setUser(User $user): static
     {
         $this->user = $user;
+
         return $this;
     }
 
@@ -104,6 +109,7 @@ class Task
     public function setCreatedAt(\DateTimeImmutable|string|null $createdAt): static
     {
         $this->createdAt = is_string($createdAt) ? new \DateTimeImmutable($createdAt) : $createdAt;
+
         return $this;
     }
 
@@ -115,6 +121,7 @@ class Task
     public function setCompletedAt(\DateTimeImmutable|string|null $completedAt): static
     {
         $this->completedAt = is_string($completedAt) ? new \DateTimeImmutable($completedAt) : $completedAt;
+
         return $this;
     }
 
@@ -126,6 +133,7 @@ class Task
     public function setDeadline(\DateTimeImmutable|string|null $deadline): static
     {
         $this->deadline = is_string($deadline) ? new \DateTimeImmutable($deadline) : $deadline;
+
         return $this;
     }
 
@@ -137,6 +145,7 @@ class Task
     public function setStatus(Status $status): static
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -148,6 +157,7 @@ class Task
     public function setPriority(Priority $priority): static
     {
         $this->priority = $priority;
+
         return $this;
     }
 
@@ -159,6 +169,7 @@ class Task
     public function setPicture(?string $picture): static
     {
         $this->picture = $picture;
+
         return $this;
     }
 }

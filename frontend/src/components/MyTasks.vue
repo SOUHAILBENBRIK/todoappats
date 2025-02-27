@@ -4,16 +4,19 @@ import userIcons from '../assets/icons/user.svg'
 import { onMounted, ref } from 'vue'
 import TaskItem from './TaskItem.vue'
 import { getTasks } from '@/api/taksApi'
+import Loading from './Loading.vue'
 const tasks = ref<Task[]>([])
 const task = ref<Task | null>(null)
+const loading = ref(true)
+
 function getAllTasks() {
   getTasks()
     .then((response) => {
       console.log(response)
       if (response.status === 200) {
-        console.log(response.data.data)
         tasks.value = JSON.parse(response.data.data)
         console.log(tasks)
+        loading.value = false
       } else {
         console.log('response', response)
       }
@@ -24,7 +27,6 @@ function getAllTasks() {
 }
 function changeTask(val: Task) {
   task.value = val
-  console.log(task.value)
 }
 
 onMounted(() => {
@@ -33,7 +35,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-full w-full flex flex-row gap-5 justify-start items-start py-2 px-4">
+  <Loading v-if="loading" />
+  <div class="h-full w-full flex flex-row gap-5 justify-start items-start py-2 px-4" v-else>
     <!-- Scrollable Task List -->
     <div class="flex-1 h-[85vh] border border-black rounded-2xl p-5 flex flex-col">
       <p>My Tasks</p>
@@ -64,10 +67,10 @@ onMounted(() => {
         <div>
           <p class="text-black text-xl font-bold">{{ task.title }}</p>
           <p class="text-black">
-            Priority : <span class="text-red-400 font-bold">{{ task.priority }}</span>
+            Priority : <span class="text-red-400 font-bold">{{ task.priority.name }}</span>
           </p>
           <p class="text-black">
-            Status : <span class="text-red-400 font-bold">{{ task.status }}</span>
+            Status : <span class="text-red-400 font-bold">{{ task.status.name }}</span>
           </p>
           <p class="text-gray-400">Created on : {{ task.createdAt.split('T')[0] }}</p>
         </div>

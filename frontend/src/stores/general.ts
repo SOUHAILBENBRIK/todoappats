@@ -10,3 +10,5 @@ export const useErroHandling = defineStore('error', () => {
 
   return { error, changeError }
 })
+
+

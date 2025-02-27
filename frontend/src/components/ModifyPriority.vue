@@ -3,9 +3,9 @@ import taskIcon from '@/assets/icons/tasks.svg'
 import type { Priority } from '@/entity/priority'
 import { inject, reactive, ref, watch, type Ref } from 'vue'
 import InputComponent from './InputComponent.vue'
-import { updatePriority ,type PriorityCreation } from '@/api/priorityApi'
+import { updatePriority, type PriorityCreation } from '@/api/priorityApi'
 const props = defineProps<{
-  priority: Priority 
+  priority: Priority
 }>()
 const title = ref(props.priority.name)
 const level = ref(props.priority.level.toString())
@@ -17,7 +17,7 @@ watch(level, (newLevel) => {
 watch(title, (newTitle) => {
   errors.title = newTitle.length < 3 ? 'Priority name should be more then 3 character' : ''
 })
-const isEditPriority : Ref<boolean, boolean> = inject('isEditPriority', ref(true))
+const isEditPriority: Ref<boolean, boolean> = inject('isEditPriority', ref(true))
 
 function updatePriorityF() {
   if (errors.title || errors.level) {
@@ -28,7 +28,7 @@ function updatePriorityF() {
       name: title.value,
       level: Number(level.value),
     }
-    updatePriority(props.priority.id,priority)
+    updatePriority(props.priority.id, priority)
       .then((response) => {
         if (response.status === 200) {
           isEditPriority.value = false
@@ -56,11 +56,11 @@ function updatePriorityF() {
     <div class="w-2/3 p-5 bg-amber-400 rounded-2xl flex flex-col items-center justify-center gap-7">
       <p class="text-white text-2xl">Update Priority</p>
       <div class="flex flex-col items-start justify-start gap-5 w-full">
-        <InputComponent placeHolder="Enter priority name" :iconPath="taskIcon" v-model="title" />
+        <InputComponent placeHolder="Enter priority name" iconPath="fa-tasks" v-model="title" />
         <p class="text-red-500 text-sm text-start" v-if="errors.title">{{ errors.title }}</p>
       </div>
       <div class="flex flex-col items-start justify-start gap-5 w-full">
-        <InputComponent placeHolder="Enter priority level" :iconPath="taskIcon" v-model="level" />
+        <InputComponent placeHolder="Enter priority level" iconPath="fa-tasks" v-model="level" />
         <p class="text-red-500 text-sm text-start" v-if="errors.level">{{ errors.level }}</p>
       </div>
 
