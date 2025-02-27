@@ -4,6 +4,7 @@ import userIcon from '@/assets/icons/user.svg'
 import InputComponent from '@/components/InputComponent.vue'
 import { onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import Loading from '@/components/Loading.vue'
 const email = ref('')
 const password = ref('')
 const userName = ref('')
@@ -12,6 +13,7 @@ const lastName = ref('')
 const age = ref('')
 const repassword = ref('')
 const profile = ref(null)
+const loading = ref(true)
 import { getUser, updateUser } from '@/api/userApi'
 const errors = reactive<Record<string, string>>({})
 
@@ -51,12 +53,15 @@ function getUserInfo() {
         email.value = user.email
         age.value = user.age.toString()
         profile.value = user.profileImage
+        loading.value = false
       } else {
         console.log('response', response)
+        loading.value = false
       }
     })
     .catch((err) => {
       console.log('error', err)
+      loading.value = false
     })
 }
 function updateUserInfo() {
@@ -96,6 +101,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <Loading v-if="loading" />
   <div
     class="w-[87vw] h-[90vh] flex flex-col items-start justify-start border border-black rounded-2xl px-10"
   >
