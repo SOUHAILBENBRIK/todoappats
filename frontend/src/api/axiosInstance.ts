@@ -1,5 +1,5 @@
 import axios from 'axios'
-import vueCookies from 'vue-cookies'
+
 
 const publicAxiosInstance = axios.create({
   baseURL: 'http://127.0.0.1:8000/api/',
@@ -15,19 +15,10 @@ const privateAxiosInstance = axios.create({
   },
 })
 
-const setAuthToken = () => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    privateAxiosInstance.defaults.headers['Authorization'] = `Bearer ${token}` ;
-    
-  } else {
-    delete privateAxiosInstance.defaults.headers['Authorization']
-  }
-}
 
 privateAxiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token : string | null = localStorage.getItem('token')
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`
     }

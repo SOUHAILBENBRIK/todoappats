@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import emailIcon from '@/assets/icons/email.svg'
-import passwordIcon from '@/assets/icons/password.svg'
 import picture from '@/assets/images/login.svg'
-import { ref, reactive, watch, provide } from 'vue'
+import { ref, reactive, watch, provide, inject } from 'vue'
 import { type UserLogin, loginUser } from '@/api/authApi'
 import InputComponent from '@/components/InputComponent.vue'
 import { useRouter } from 'vue-router'
 import ErrorView from './ErrorView.vue'
 import { useErroHandling } from '@/stores/general'
+import Loading from '@/components/Loading.vue'
 const email = ref('')
 const password = ref('')
 const checkBox = ref(false)
@@ -35,10 +34,11 @@ function login() {
   loginUser(user)
     .then((response) => {
       if (response.status === 200) {
-        router.push('/dashboard')
+        console.log('response', response)
         localStorage.setItem('token', response.data.token)
         router.push('/dashboard')
-      } else {
+      }
+       else {
         console.log('response', response)
         loading.value = false
         email.value = ''
@@ -47,7 +47,7 @@ function login() {
       }
     })
     .catch((err) => {
-      //console.log('error', err)
+      console.log('error', err)
       loading.value = false
       email.value = ''
       password.value = ''
@@ -64,7 +64,7 @@ function login() {
     path="/login"
   />
   <!-- Loading Component -->
-  <loading v-else-if="loading" />
+  <Loading v-else-if="loading" />
   <!-- Main Section -->
   <main v-else class="h-screen flex items-center justify-center bg-gray-100">
     <div class="flex flex-row items-center justify-center gap-10 p-8 bg-white shadow-md rounded-lg">

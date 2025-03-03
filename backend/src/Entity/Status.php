@@ -12,7 +12,7 @@ class Status
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('status:read')]
+    #[Groups(['task:read', 'status:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -40,8 +40,6 @@ class Status
 
         return $this;
     }
-
-
 
     public function getUser(): ?User
     {

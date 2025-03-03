@@ -107,7 +107,11 @@ onMounted(() => {
   >
     <div class="w-full flex flex-row items-center justify-between pt-4 pb-8">
       <p class="text-black text-2xl">Account Information</p>
-      <p class="text-black underline cursor-pointer" @click="router.push('/dashboard')">Go Back</p>
+      <div class="flex gap-4 cursor-pointer" @click="router.push('/dashboard')">
+        <v-icon name="fa-arrow-alt-circle-left" fill="black" scale="1.5" />
+        <p class="underline text-black">Go back</p>
+      </div>
+      
     </div>
     <div
       class="w-full flex flex-row items-center justify-start gap-5 py-3 px-5 bg-gray-700 rounded-3xl"
@@ -118,8 +122,8 @@ onMounted(() => {
         class="w-20 h-20 bg-gray-200 rounded-full p-2"
       />
       <div class="flex flex-col gap-2">
-        <p class="text-2xl text-black font-bold">{{ name + ' ' + lastName }}</p>
-        <p class="text-l text-gray-800">{{ email }}</p>
+        <p class="text-2xl text-black font-bold">{{ name.toUpperCase() + ' ' + lastName.toUpperCase() }}</p>
+        <p class="text-l text-white">{{ email }}</p>
       </div>
     </div>
     <div class="w-full flex flex-col items-start justify-start gap-5 py-5">

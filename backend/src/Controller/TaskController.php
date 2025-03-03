@@ -82,12 +82,12 @@ final class TaskController extends AbstractController
     {
         try {
             $user = $this->getUser();
-            if(!$user instanceof  User){
+            if (!$user instanceof User) {
                 return $this->responseService->notfoundResponse(
-                    "User not Found"
+                    'User not Found'
                 );
             }
-            $result = $this->taskService->createTask($request , $user);
+            $result = $this->taskService->createTask($request, $user);
             if (isset($result['error'])) {
                 return $this->responseService->errorResponse(
                     message: $result['error'],
@@ -111,7 +111,6 @@ final class TaskController extends AbstractController
         try {
             $task = $this->taskService->getTask($task_id);
 
-
             if (!$task) {
                 return $this->responseService->notfoundResponse(
                     message: 'task not found',
@@ -128,7 +127,7 @@ final class TaskController extends AbstractController
         }
     }
 
-    #[Route('/{task_id<\d+>}', name : 'update_task', methods: ['Put'])]
+    #[Route('/{task_id<\d+>}', name : 'update_task', methods: ['POST'])]
     public function updateTask(
         Request $request,
         int $task_id): JsonResponse
@@ -144,7 +143,7 @@ final class TaskController extends AbstractController
             if (!$this->isGranted('modify_tasks_entities', $user)) {
                 return $this->responseService->accessDeniedResponse('You can update only our tasks');
             }
-            $result = $this->taskService->updateTask($currentTask, $request->getContent());
+            $result = $this->taskService->updateTask($currentTask, $request);
 
             if (isset($result['error'])) {
                 return $this->responseService->errorResponse(
@@ -233,6 +232,25 @@ final class TaskController extends AbstractController
 
             return $this->responseService->successResponse(
                 message: $result['success'],
+            );
+        } catch (\Exception $e) {
+            return $this->responseService->errorResponse(message: $e->getMessage());
+        }
+    }
+    #[Route('/static', name : 'get_static', methods : ['GET'])]
+    public function getStatic(
+    ): JsonResponse {
+        try {
+            $user = $this->getUser();
+            if (!$user instanceof User) {
+                return $this->responseService->notfoundResponse('User not found');
+            }
+
+            $result = $this->taskService->getStatistics($user->getId());
+
+            return $this->responseService->successResponse(
+                message: 'successfully get statistics',
+                data: $result,
             );
         } catch (\Exception $e) {
             return $this->responseService->errorResponse(message: $e->getMessage());

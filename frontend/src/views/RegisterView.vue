@@ -4,7 +4,7 @@ import { ref, reactive, watch } from 'vue'
 import { type UserRegistration, registerUser } from '@/api/authApi'
 import InputComponent from '@/components/InputComponent.vue'
 import { useRouter } from 'vue-router'
-
+import Loading from '@/components/Loading.vue'
 const email = ref('')
 const password = ref('')
 const userName = ref('')
@@ -70,7 +70,6 @@ function register() {
   loading.value = true
   registerUser(user).then((response) => {
     if (response.status === 201) {
-      console.log('response', response.data)
       localStorage.setItem('token', response.data.token)
       router.push('/dashboard')
     }
@@ -79,7 +78,8 @@ function register() {
 </script>
 
 <template>
-  <main v-if="!loading" class="flex flex-col items-center justify-center min-h-screen">
+  <Loadingoading v-if="loading" message="waiting please" />
+  <main v-else class="flex flex-col items-center justify-center min-h-screen">
     <div class="flex flex-col md:flex-row gap-8 items-center w-full max-w-4xl">
       <div class="hidden md:flex justify-center items-center w-1/2">
         <img :src="picture" alt="Register" class="max-w-full" />
@@ -139,5 +139,4 @@ function register() {
       </div>
     </div>
   </main>
-  <loading v-else message="waiting please" />
 </template>

@@ -1,17 +1,22 @@
 <script setup lang="ts">
-import { watch, ref, onMounted } from 'vue'
+import { watch, ref, onMounted, computed } from 'vue'
 import InputComponent from '@/components/InputComponent.vue'
 import type { Priority } from '@/entity/priority'
 import type { Status } from '@/entity/status'
 import { getStatus } from '@/api/statusApi'
 import { getPriority } from '@/api/priorityApi'
-import { createTask } from '@/api/taksApi'
+import { updateTask } from '@/api/taksApi'
 import Loading from '@/components/Loading.vue'
 import { useTaskHandling } from '@/stores/task'
+import type { Task } from '@/entity/tasks'
 const loading = ref(false)
 
+const props = defineProps<{
+  task: Task
+}>()
+
 const title = ref('')
-const description = ref('')
+const description = ref<string | undefined>('')
 const priority = ref<Priority | null>(null)
 const status = ref<Status | null>(null)
 const deadline = ref<Date | null>(null)
@@ -20,19 +25,25 @@ const openPriority = ref(false)
 const openStatus = ref(false)
 const priorityList = ref<Priority[]>([])
 const statusList = ref<Status[]>([])
-  const imagePreview = ref<string | null>(null)
-
+const imagePreview = ref<string | null>(null)
 function openPriorityF() {
   openPriority.value = !openPriority.value
 }
+const formattedDeadline = computed({
+  get() {
+    return deadline.value ? deadline.value.toISOString().split('T')[0] : ''
+  },
+  set(value: string) {
+    deadline.value = value ? new Date(value) : null
+  }
+})
 
 function handleFileChange(event: Event) {
   const target = event.target as HTMLInputElement
   if (target.files && target.files.length > 0) {
-    photo.value = target.files[0]
-    imagePreview.value = URL.createObjectURL(photo.value)
-  } else {
-    photo.value = null
+    const file = target.files[0]
+    photo.value = file
+    imagePreview.value = URL.createObjectURL(file) 
   }
 }
 function openStatusF() {
@@ -47,6 +58,7 @@ function getAllStatus() {
       console.log('error', err)
     })
 }
+
 function getAllPriority() {
   getPriority()
     .then((response) => {
@@ -65,21 +77,22 @@ function changeStatus(newStatus: Status) {
   openStatus.value = false
 }
 function handleSubmit() {
+    console.log(priority,status)
   if (priority.value != null && status.value != null) {
     loading.value = true
     const formData = new FormData()
     formData.append('title', title.value)
-    formData.append('description', description.value)
+    formData.append('description', description.value || '')
     formData.append('priority', priority.value?.id.toString())
     formData.append('status', status.value?.id.toString())
     formData.append('deadline', deadline.value ? deadline.value.toString() : '')
     if (photo.value) {
-      formData.append('picture', photo.value)
-    }
-    createTask(formData)
+    formData.append('picture', photo.value)
+  }
+    updateTask(props.task.id, formData)
       .then((response) => {
-        if (response.status === 201) {
-          useTaskHandling().changeNewTask(false)
+        if (response.status === 200) {
+          useTaskHandling().changeEditTask(false)
           loading.value = false
         } else {
           console.log('response', response)
@@ -87,6 +100,7 @@ function handleSubmit() {
         }
       })
       .catch((err) => {
+        loading.value = false
         console.log('error', err.message)
       })
   } else {
@@ -94,9 +108,20 @@ function handleSubmit() {
   }
 }
 function goBack() {
-  useTaskHandling().changeNewTask(false)
+  useTaskHandling().changeEditTask(false)
 }
 onMounted(() => {
+  if (props.task.picture) {
+    imagePreview.value = `http://localhost:8000${props.task.picture}`
+  }
+    title.value = props.task.title
+    description.value = props.task.description ? props.task.description : ''
+    console.log(props.task.deadline)
+    
+    deadline.value =  props.task.deadline? new Date(props.task.deadline) : null
+    console.log(deadline.value)
+    priority.value = props.task.priority
+    status.value = props.task.status
   getAllPriority()
   getAllStatus()
 })
@@ -115,7 +140,7 @@ onMounted(() => {
         <p class="underline text-black">Go back</p>
       </div>
     </div>
-    <div class="w-full flex flex-col gap-5 border-1 border-gray-400 p-5 rounded-2xl items-center">
+    <div class="w-full flex flex-col gap-5 border-1 border-gray-400 p-5 rounded-2xl justify-center items-center">
       <label
         class="w-30 h-30 border-dashed border-2 border-gray-500 rounded-2xl flex items-center justify-center cursor-pointer"
       >
@@ -128,10 +153,10 @@ onMounted(() => {
         />
         <span v-else class="text-gray-500">Upload Image</span>
       </label>
-      <InputComponent placeHolder="Enter task title" iconPath="fa-tasks" v-model="title" />
+      <InputComponent placeHolder="Enter task title" iconPath="fc-parallel-tasks" v-model="title" />
       <InputComponent
         placeHolder="Enter task description"
-        iconPath="md-description-twotone"
+        iconPath="fc-generic-sorting-desc"
         v-model="description"
       />
       <button
@@ -180,17 +205,16 @@ onMounted(() => {
       <div v-else-if="openStatus && statusList.length == 0"></div>
       <input
         type="date"
-        v-model="deadline"
+        v-model="formattedDeadline"
         class="w-full px-15 py-3 rounded-xl focus:border-gray-300 text-black border-gray-500 border-1"
       />
-      
     </div>
 
     <button
       class="bg-white p-5 w-full rounded-2xl text-black border-1 border-gray-500 cursor-pointer"
       @click="handleSubmit"
     >
-      Add Task
+      Edit Task
     </button>
   </div>
 </template>

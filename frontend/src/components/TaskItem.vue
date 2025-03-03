@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 import { type Task } from '../entity/tasks.ts'
+import { updateTaskStatus } from '@/api/taksApi.ts';
 const props = defineProps<{
   task: Task
   onClick: () => void
 }>()
+function updateTaskStatusF(taskId: number, statusId: number) {
+  updateTaskStatus(taskId, statusId)
+    .then((response) => {
+      console.log(response)
+    })
+    .catch((err) => {
+      console.log('error', err.message)
+    })
+}
+
 </script>
 
 <template>
@@ -12,12 +23,12 @@ const props = defineProps<{
     class="task bg-white p-2 rounded-lg w-full border border-gray-300 text-black flex flex-row gap-2 items-start cursor-pointer hover:bg-gray-200"
     @click="onClick"
   >
-    <div class="task-dot h-4 w-4 rounded-full bg-white border-2 border-tomato"></div>
+  
     <div class="task-details w-11/12">
       <div
         class="task-content flex flex-row gap-2 items-start justify-between p-2 w-full rounded-lg"
       >
-        <div style="width: 65%; max-height: 150px">
+        <div class="task-info w-4/5">
           <p class="title text-xl font-bold text-black overflow-hidden">{{ task.title }}</p>
           <p class="description text-sm font-light text-black overflow-hidden">
             {{ task.description }}
@@ -43,6 +54,15 @@ const props = defineProps<{
           createdAt : <span class="font-bold">{{ task.createdAt.split('T')[0] }}</span>
         </p>
       </div>
+    </div>
+    <div class="h-full flex flex-row items-center justify-center px-2 gap-2" v-if="task.status.name !='Completed'">
+      <div class="w-10 h-10 cursor-pointer p-1 rounded-full bg-white border-1 border-green-700 " @click="updateTaskStatusF(task.id, task.status.id+2)">
+        <v-icon name="md-doneoutline" fill="green" scale="1.5" />
+      </div>
+      <div class="w-10 h-10 cursor-pointer p-1 rounded-full bg-white border-1 border-orange-700 " @click="updateTaskStatusF(task.id, task.status.id+1)" v-if="task.status.name='Padding'">
+        <v-icon name ="gi-progression" fill="orange" scale ="1.5" />
+      </div>
+      
     </div>
   </div>
 </template>

@@ -13,7 +13,7 @@ class Priority
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('priority:read')]
+    #[Groups(['task:read', 'priority:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -31,8 +31,6 @@ class Priority
     #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     #[Groups('priority:read')]
     private ?User $user = null;
-
-
 
     public function getId(): ?int
     {

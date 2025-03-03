@@ -4,7 +4,6 @@ import { useRouter, useRoute } from 'vue-router'
 import userIcon from '../assets/icons/user.svg'
 import { onMounted, ref, computed, watchEffect } from 'vue'
 import { getUser } from '@/api/userApi'
-
 const router = useRouter()
 const route = useRoute()
 const currentRoute = computed(() => route.path)
@@ -109,16 +108,7 @@ const isActive = (path) => {
         <p class="text-base font-medium">Profile</p>
       </div>
 
-      <div
-        :class="[
-          'flex items-center gap-2 px-4 py-2 rounded-md cursor-pointer',
-          isActive('/help').value ? 'bg-white text-black' : 'text-white',
-        ]"
-        @click="router.push('/help')"
-      >
-        <v-icon name="md-helpcenter" fill="black" scale="1.6" />
-        <p class="text-base font-medium">Help</p>
-      </div>
+     
     </div>
 
     <!-- Logout -->

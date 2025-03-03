@@ -132,8 +132,11 @@ onMounted(async () => {
     v-else
   >
     <div class="w-full flex flex-row items-center justify-between pt-4 pb-8">
-      <p class="text-amber-400 text-2xl">Task Categories</p>
-      <p class="text-black underline cursor-pointer" @click="router.push('/')">Go Back</p>
+      <p class="text-black font-bold text-2xl">Task Categories</p>
+      <div class="flex gap-4 cursor-pointer" @click="router.push('/dashboard')">
+        <v-icon name="fa-arrow-alt-circle-left" fill="black" scale="1.5" />
+        <p class="underline text-black">Go back</p>
+      </div>
     </div>
     <div class="w-full py-10">
       <div class="w-full flex flex-row items-center justify-between">

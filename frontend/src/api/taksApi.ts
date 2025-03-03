@@ -23,6 +23,9 @@ export const createTask = async (task: FormData): Promise<AxiosResponse> => {
 export const getTasks = async (): Promise<AxiosResponse> => {
   return await privateAxiosInstance.get('/tasks')
 }
+export const getStatic = async () : Promise<AxiosResponse> => {
+  return await privateAxiosInstance.get('/tasks/static')
+}
 export const getCompletedTasks = async (): Promise<AxiosResponse> => {
   return await privateAxiosInstance.get('/tasks/completed')
 }
@@ -33,8 +36,12 @@ export const getTask = async (id: number): Promise<AxiosResponse> => {
   return await privateAxiosInstance.get(`/tasks/${id}`)
 }
 
-export const updateTask = async (id: number, task: TaskCreation): Promise<AxiosResponse> => {
-  return await privateAxiosInstance.put(`/tasks/${id}`, task)
+export const updateTask = async (id: number, task: FormData): Promise<AxiosResponse> => {
+  return await privateAxiosInstance.post(`/tasks/${id}`, task, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
 }
 export const deleteTask = async (id: number): Promise<AxiosResponse> => {
   return await privateAxiosInstance.delete(`/tasks/${id}`)
@@ -48,9 +55,9 @@ export const getAllCompletedTasks = async (): Promise<AxiosResponse> => {
 export const getAllMissedTasks = async (): Promise<AxiosResponse> => {
   return await privateAxiosInstance.get('/tasks/missed/user')
 }
-export const updateTaskStatusPriority = async (
+export const updateTaskStatus = async (
   id: number,
   status: number,
 ): Promise<AxiosResponse> => {
-  return await privateAxiosInstance.put(`/tasks/${id}/status`, { status })
+  return await privateAxiosInstance.patch(`/tasks/${id}`, { status })
 }

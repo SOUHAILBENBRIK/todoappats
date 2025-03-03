@@ -15,6 +15,19 @@ class TaskRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Task::class);
     }
+    public function countByStatus(string $statusName, int $userId): int
+    {
+        return $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->join('t.status', 's')
+            ->where('s.name = :statusName')
+            ->andWhere('t.user = :userId')
+            ->setParameter('statusName', $statusName)
+            ->setParameter('userId', $userId) // Fix: Added missing parameter
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
 
     //    /**
     //     * @return Task[] Returns an array of Task objects
@@ -40,4 +53,13 @@ class TaskRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function countByUser(int $userId): int
+    {
+        return $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->where('t.user = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
